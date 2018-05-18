@@ -312,7 +312,9 @@ define(["util"], function(util){
             };
             return o;
         },
-        initSelfProperty(){},
+        initSelfProperty:function(){
+            
+        },
         saveProperty:function(){},			//		保存控件属性
         setData:function(data){},			//		设置控件数据
         getData:function(){},				//		提取控件数据
