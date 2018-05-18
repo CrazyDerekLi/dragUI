@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="css/font-awesome-4.7.0/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="js/jquery-ui-1.12.1/jquery-ui.min.css">
+    <script type="text/javascript" src="js/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="js/bootstrap-3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="js/bootstrap-table-1.12.1/bootstrap-table.min.css">
+    <script type="text/javascript" src="js/bootstrap-table-1.12.1/bootstrap-table.min.js"></script>
+
+    <link rel="stylesheet" media="screen" type="text/css" href="js/colorpicker/css/colorpicker.css" />
+    <script type="text/javascript" src="js/colorpicker/js/colorpicker.js"></script>
+
+    <script type="text/javascript" src="js/require.js" class="last"></script>
+    <script type="text/javascript">
+        $.composerMap = {};
+        require.config({
+            paths:{
+                'composerMap':'js/composer/composerMap',
+            }
+        });
+        require(['composerMap'], function (composerMap){
+            composerMap.init({
+                designer:$("#designer"),
+                dragListBox:$("#dragBox")
+            });
+            composerMap.show();
+            $.composerMap = composerMap;
+        });
+    </script>
+    <link rel="stylesheet" href="css/designer.css">
+</head>
+<body>
+
+<div id="dragList">
+    <ul id="groupList" class="groupList">
+        <li class="selected" bindShow="dragBox">控件</li>
+        <li bindShow="bodySettingBox">设置</li>
+    </ul>
+    <div id="dragBox" class="groupCenter selected">
+
+    </div>
+    <div id="bodySettingBox" class="groupCenter">
+        <div class="property_list">
+            <div class="property_item">
+                <div class="property_label">页面宽度：</div>
+                <div class="property_info"><input type="text" id="bodyWidth"/></div>
+            </div>
+            <div class="property_item">
+                <div class="property_label">页面高度：</div>
+                <div class="property_info"><input type="text" id="bodyHeight"/></div>
+            </div>
+            <div class="property_item">
+                <div class="property_label">背景颜色：</div>
+                <div class="property_info">
+                    <div class="color_picker" id="bodyBg">
+                        <input type="text" readonly="readonly">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="propertyList">
+    <ul id="propertyGroupList" class="groupList">
+        <li class="selected">布局</li>
+        <li>数据</li>
+        <li>事件</li>
+    </ul>
+    <div id="propertyBox" class="groupCenter selected">
+
+    </div>
+</div>
+
+<div id="designer_tools">
+    <!--<div class="designer_btn"><i class="fa fa-undo-alt"></i>返回</div>-->
+    <div class="designer_btn" id="designer_save"><i class="fa fa-save"></i>保存</div>
+    <div class="designer_btn" id="designer_lock" lock="0"><i class="fa fa-lock"></i>锁定</div>
+    <div class="designer_btn" id="designer_view"><i class="fa fa-eye"></i>预览</div>
+</div>
+<div id="designerBox">
+    <div id="designerBg">
+    </div>
+    <div id="designerContainer">
+        <div id="designer" style="width:1920px;height:1080px;"></div>
+    </div>
+</div>
+<div id="designerView">
+    <div id="designerViewMsk"></div>
+    <div id="designerViewContainer"></div>
+    <div id="designerCloseBtn">
+        <i class="fa fa-window-close"></i>
+    </div>
+</div>
+</body>
+</html>
