@@ -313,7 +313,7 @@ define(["util"], function(util){
             return o;
         },
         initSelfProperty:function(){
-            
+
         },
         saveProperty:function(){},			//		保存控件属性
         setData:function(data){},			//		设置控件数据
@@ -322,7 +322,9 @@ define(["util"], function(util){
         getValue:function(){},				//		控件取值
         		//		渲染
         afterDrag:function(){},				//		拖拽结束事件
-        afterResize:function(){},			//		调整列宽结束事件
+        afterResize:function(){
+
+        },			//		调整列宽结束事件
         destroy:function(){
             this.destroyComposer();
             this.drag.remove();

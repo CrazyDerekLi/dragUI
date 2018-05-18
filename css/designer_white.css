@@ -1,7 +1,7 @@
 body{
     padding:0;
     margin:0;
-    background: #01132d;
+    background: #ffffff;
 }
 #dragList,#propertyList{
     width:291px;
@@ -10,7 +10,7 @@ body{
     left:0;
     top:0;
     bottom:0;
-    border-right:1px solid #00203a;
+    border-right:1px solid #e3e3e3;
     z-index:100;
 }
 #propertyList{
@@ -36,11 +36,11 @@ body{
     left:0;
     top:0;
     bottom:0;
-    background: #01132d;
-    border-right:1px solid #00203a;
+    background: #ffffff;
+    border-right:1px solid #e3e3e3;
 }
 .groupList li{
-    color:#bababa;
+    color:#333;
     height:46px;
     line-height: 46px;
     text-align: center;
@@ -57,7 +57,7 @@ body{
     bottom:0;
     left:0;
     right:0;
-    background: url("../image/tab.png") repeat;
+    background: url("../image/tab_white.png") repeat;
 }
 #designer_tools{
     position:fixed;
@@ -65,14 +65,14 @@ body{
     right:0;
     top:0;
     height:42px;
-    background:#01132d;
-    border-bottom:1px solid #00203a;
+    background:#ffffff;
+    border-bottom:1px solid #e3e3e3;
 }
 .dragGroup{
-    border-bottom:1px solid #00203a;
+    border-bottom:1px solid #e3e3e3;
 }
 .dragItem{
-    background:#01132d;
+    background:#ffffff;
     z-index:102;
 }
 #designerContainer{
@@ -84,7 +84,7 @@ body{
     overflow: auto;
 }
 #designer{
-    background:url('../image/bg.png') repeat repeat;
+    /*background:url('../image/bg.png') repeat repeat;*/
 }
 .groupCenter{
     position:fixed;
@@ -93,10 +93,10 @@ body{
     bottom:0;
     overflow-y: auto;
     overflow-x: hidden;
-    background:#01132d;
+    background:#ffffff;
     display:none;
     width:240px;
-    border-right:#00203a;
+    border-right:#e3e3e3;
 }
 .groupCenter.selected{
     display: block;
@@ -107,7 +107,7 @@ body{
 .dragGroupTitle{
     height:40px;
     line-height: 50px;
-    color:#dbdbdb !important;
+    color:#333 !important;
     overflow: hidden;
     font-size:12px;
     padding-left:20px;
@@ -130,7 +130,7 @@ body{
     width:60px;
     height:48px;
     text-align: center;
-    color:#a0a0a0;
+    color:#333;
 }
 .dragItemIcon img{
     margin:0 auto;
@@ -141,7 +141,7 @@ body{
 .dragItemName{
     line-height: 20px;
     text-align: center;
-    color:#a0a0a0;
+    color:#333;
     font-size:12px;
     overflow: hidden;
     white-space:nowrap;
@@ -157,7 +157,7 @@ body{
     width:70px;
     top:0;
     bottom:0;
-    color:#e0e0e0;
+    color:#333;
     padding-left:10px;
     line-height: 30px;
 }
@@ -174,7 +174,7 @@ body{
 .property_info>*{
     height:24px;
     border-radius: 2px;
-    border:none;
+    border:1px solid #c5c5c5;
     margin:3px 0;
     width:130px;
 }
@@ -209,12 +209,12 @@ body{
     width:130px;
     height:24px;
     border-radius: 2px;
-    border:none;
     cursor: pointer;
     overflow: hidden;
     position:absolute;
     top:0;
     left:0;
+    border:1px solid #e3e3e3
 }
 .color_picker>input{
     height:24px;
@@ -254,7 +254,7 @@ body{
 .designer_drag_obj{
     position:absolute;
     z-index:11;
-    box-shadow: 0 0 20px #ccc;
+    /*box-shadow: 0 0 20px #ccc;*/
 }
 .drag_msk{
     position:absolute;
@@ -305,16 +305,16 @@ body{
     font-size:18px;
     text-align: center;
     display: inline-block;
-    background:#71bff4;
-    color:#333;
+    background:#ebeef7;
+    color:#999;
     cursor:pointer;
 }
 .designer_drag_obj>.designer_drag_head>.designer_drag_tools>i:hover{
-    background:#3481ce;
+    background:#d8ddea;
 }
 .propertyGroup{
     position:relative;
-    border-bottom:1px solid #00203a;
+    border-bottom:1px solid #e3e3e3;
 }
 .property_title{
     height:40px;
@@ -326,7 +326,7 @@ body{
 .designer_btn{
     display: inline-block;
     line-height: 40px;
-    color:#bababa;
+    color:#575a5f;
     padding:0 5px;
     margin-left:10px;
     cursor: pointer;
@@ -359,7 +359,7 @@ body{
     z-index:3;
     width:40px;
     height:40px;
-    color:#bababa;
+    color:#333;
     line-height: 40px;
     text-align: center;
     cursor: pointer;

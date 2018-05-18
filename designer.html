@@ -25,13 +25,16 @@
         require(['composerMap'], function (composerMap){
             composerMap.init({
                 designer:$("#designer"),
-                dragListBox:$("#dragBox")
+                dragListBox:$("#dragBox"),
+                // defaultBgColor:'#112247'
+                defaultBgColor:'#fff'
             });
             composerMap.show();
             $.composerMap = composerMap;
         });
     </script>
-    <link rel="stylesheet" href="css/designer.css">
+    <!--<link rel="stylesheet" href="css/designer.css">-->
+    <link rel="stylesheet" href="css/designer_white.css">
 </head>
 <body>
 
@@ -81,6 +84,7 @@
     <div class="designer_btn" id="designer_save"><i class="fa fa-save"></i>保存</div>
     <div class="designer_btn" id="designer_lock" lock="0"><i class="fa fa-lock"></i>锁定</div>
     <div class="designer_btn" id="designer_view"><i class="fa fa-eye"></i>预览</div>
+    <div class="designer_btn" id="designer_delete"><i class="fa fa-trash-alt"></i>删除</div>
 </div>
 <div id="designerBox">
     <div id="designerBg">

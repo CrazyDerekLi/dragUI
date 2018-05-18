@@ -2,7 +2,8 @@
     var composerBasePath = "js/composer/";
     var composerList = [{
         groupName:"基本组件",composerConfig :{
-            'c_label':composerBasePath+'c_label'
+            'c_label':composerBasePath+'c_label',
+            'c_iframe':composerBasePath+'c_iframe'
         }
     },{
         groupName:"图表组件",composerConfig :{
@@ -49,6 +50,9 @@
             init:function(options){
                 var _this = this;
                 this.designer = options.designer;
+                if(options.defaultBgColor){
+                    this.bodySetting.bgColor = options.defaultBgColor;
+                }
                 this.designer.css({
                     width:this.bodySetting.width,
                     height:this.bodySetting.height,
@@ -324,12 +328,7 @@
                     var setting = o.getSettings();
                     data.composerList.push(setting);
                 }
-                data.bodySetting = this.bodySetting||{
-                    width:1920,
-                    height:1080,
-                    bgColor:"#112247",
-                    className:""
-                };
+                data.bodySetting = this.bodySetting;
                 var jsonStr = JSON.stringify(data);
                 console.log(jsonStr);
                 window.localStorage.setItem("designerData",jsonStr);
