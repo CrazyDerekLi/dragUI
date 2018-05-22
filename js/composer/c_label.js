@@ -1,13 +1,13 @@
 require.config({
     paths:{
-        'base':'js/composer/base',
-        'util':'js/composer/util'
+        'base':composerBasePath+'base',
+        'util':composerBasePath+'util'
     }
 });
 define(['base','util'], function(base,util){
     var classname = "c_label";
     var classTitle = "标签";
-    var classIcon = "image/biaoqian.png";
+    var classIcon = basePath+"image/biaoqian.png";
     function o(options){
         var o1 = {
             id:"",

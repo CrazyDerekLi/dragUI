@@ -1,5 +1,4 @@
 (function(){
-    var composerBasePath = "js/composer/";
     var composerList = [{
         groupName:"基本组件",composerConfig :{
             'c_label':composerBasePath+'c_label',

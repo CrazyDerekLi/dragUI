@@ -1,12 +1,12 @@
 require.config({
     paths:{
-        'base':'js/composer/base'
+        'base':composerBasePath+'base'
     }
 });
 define(['base'], function(base){
     var classname = "chart_zhexiantu";
     var classTitle = "折线图";
-    var classIcon = "image/zhexiantu.png";
+    var classIcon = basePath+"image/zhexiantu.png";
     function o(options){
         var o1 = {
             id:"",
