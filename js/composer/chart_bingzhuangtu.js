@@ -6,7 +6,7 @@ require.config({
 define(['base'], function(base){
     var classname = "chart_bingzhuangtu";
     var classTitle = "饼状图";
-    var classIcon = basePath+"image/biaozhunbingtu.png";
+    var classIcon = composerBasePath+"image/biaozhunbingtu.png";
     function o(options){
         var o1 = {
             id:"",

@@ -7,7 +7,7 @@ require.config({
 define(['base','util'], function(base,util){
     var classname = "c_label";
     var classTitle = "标签";
-    var classIcon = basePath+"image/biaoqian.png";
+    var classIcon = composerBasePath+"image/biaoqian.png";
     function o(options){
         var o1 = {
             id:"",

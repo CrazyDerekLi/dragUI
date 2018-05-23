@@ -7,7 +7,7 @@ require.config({
 define(['base','util'], function(base,util){
     var classname = "c_iframe";
     var classTitle = "引用页面控件";
-    var classIcon = basePath+"image/iframe.png";
+    var classIcon = composerBasePath+"image/iframe.png";
     function o(options){
         var o1 = {
             id:"",
