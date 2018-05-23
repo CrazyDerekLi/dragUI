@@ -1,6 +1,6 @@
 require.config({
     paths:{
-        'base':composerBasePath+'base'
+        'base':composerBasePath+'js/composer/base'
     }
 });
 define(['base'], function(base){

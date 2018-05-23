@@ -19,17 +19,17 @@
     <script type="text/javascript">
         $.composerMap = {};
         var basePath = "http://localhost:63342/dragUI/";
-        var composerBasePath = basePath+"js/composer/";
+        var composerBasePath = basePath;
         var composerConfig = {
-            'c_label':composerBasePath+'c_label',
-            'c_iframe':composerBasePath+'c_iframe',
-            'chart_zhuzhuangtu':composerBasePath+'chart_zhuzhuangtu',
-            'chart_bingzhuangtu':composerBasePath+'chart_bingzhuangtu',
-            'chart_zhexiantu':composerBasePath+'chart_zhexiantu'
+            'c_label':composerBasePath+'js/composer/c_label',
+            'c_iframe':composerBasePath+'js/composer/c_iframe',
+            'chart_zhuzhuangtu':composerBasePath+'js/composer/chart_zhuzhuangtu',
+            'chart_bingzhuangtu':composerBasePath+'js/composer/chart_bingzhuangtu',
+            'chart_zhexiantu':composerBasePath+'js/composer/chart_zhexiantu'
         };
         require.config({
             paths:{
-                'composerMap':'js/composer/composerMap',
+                'composerMap':composerBasePath+'js/composer/composerMap',
             }
         });
         require(['composerMap'], function (composerMap){
@@ -58,8 +58,7 @@
             composerMap.init({
                 designer:$("#designer"),
                 groupList:groupList,
-                theme:"dark",//dark or white
-                themePath:basePath+"css/"
+                theme:"dark"//dark or white
             });
             composerMap.show();
             $.composerMap = composerMap;

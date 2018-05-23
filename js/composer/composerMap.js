@@ -40,7 +40,7 @@
                 $("<link>")
                     .attr({ rel: "stylesheet",
                         type: "text/css",
-                        href: this.themePath+"designer_"+this.theme+".css",
+                        href: composerBasePath+"css/designer_"+this.theme+".css",
                         id:"designer_theme"
                     })
                     .appendTo("head");
@@ -53,7 +53,6 @@
                 this.designer = options.designer;
                 this.groupList = options.groupList;
                 this.theme = options.theme||this.theme;
-                this.themePath = options.themePath||this.themePath;
 
                 this.changeTheme(this.theme);
 
