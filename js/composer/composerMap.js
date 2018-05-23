@@ -1,26 +1,7 @@
 (function(){
-    var composerList = [{
-        groupName:"基本组件",composerConfig :{
-            'c_label':composerBasePath+'c_label',
-            'c_iframe':composerBasePath+'c_iframe'
-        }
-    },{
-        groupName:"图表组件",composerConfig :{
-            'chart_zhuzhuangtu':composerBasePath+'chart_zhuzhuangtu',
-            'chart_bingzhuangtu':composerBasePath+'chart_bingzhuangtu',
-            'chart_zhexiantu':composerBasePath+'chart_zhexiantu'
-        }
-    }];
-    var composerGroupConfig = {};
-    var composerConfig = {};
     var dep = [];
-    for(var i=0;i<composerList.length;i++){
-        var _composerConfig = composerList[i].composerConfig;
-        for(var key in _composerConfig){
-            dep.push(key);
-            composerConfig[key] = _composerConfig[key]
-            composerGroupConfig[key] = composerList[i].groupName
-        }
+    for(var key in composerConfig){
+        dep.push(key);
     }
     require.config({
         paths:composerConfig
@@ -29,33 +10,56 @@
         var composerType = {};
         for (var i = 0; i < arguments.length; i++) {
             composerType[dep[i]] = {
-                group:composerGroupConfig[dep[i]],
                 func:arguments[i]
             }
         }
         var composerMap = {
             allComposer:composerType,
+            groupList:[],
             all:{},
             lock:false,
             current:null,
             dragging:false,
             clone:undefined,
+            theme:"white",
+            themePath:basePath+"css/",
             bodySetting:{
                 width:1920,
                 height:1080,
                 bgColor:"#112247",
                 className:""
             },
+            changeTheme:function(theme){
+                this.theme = theme;
+                if(this.theme == "white"){
+                    this.bodySetting.bgColor = '#ffffff';
+                }else{
+                    this.bodySetting.bgColor = '#112247';
+                }
+                $("#designer_theme").remove();
+                $("<link>")
+                    .attr({ rel: "stylesheet",
+                        type: "text/css",
+                        href: this.themePath+"designer_"+this.theme+".css",
+                        id:"designer_theme"
+                    })
+                    .appendTo("head");
+                this.designer.css({
+                    background:this.bodySetting.bgColor
+                });
+            },
             init:function(options){
                 var _this = this;
                 this.designer = options.designer;
-                if(options.defaultBgColor){
-                    this.bodySetting.bgColor = options.defaultBgColor;
-                }
+                this.groupList = options.groupList;
+                this.theme = options.theme||this.theme;
+                this.themePath = options.themePath||this.themePath;
+
+                this.changeTheme(this.theme);
+
                 this.designer.css({
                     width:this.bodySetting.width,
-                    height:this.bodySetting.height,
-                    background:this.bodySetting.bgColor
+                    height:this.bodySetting.height
                 });
                 this.designer.addClass(this.bodySetting.className);
                 this.designer.html("");
@@ -77,8 +81,10 @@
                                 l:x,
                                 t:y
                             }
-                        }
-                        var composer = new _this.allComposer[type].func(options);
+                        };
+                        var _options = _this.clone.data("options")||{};
+                        var newOptions = $.extend({},options,_options);
+                        var composer = new _this.allComposer[type].func(newOptions);
                         var id = composer.id;
                         _this.all[id] = composer;
                         _this.clone.remove();
@@ -124,32 +130,14 @@
                     }
 
                 });
-                this.dragListBox = options.dragListBox;
+                this.dragList = $("#dragList");
 
-                this.dragListBox.html("");
-                for(var i=0;i<composerList.length;i++){
-                    var group = $('<div class="dragGroup">');
-                    var groupTitle = $('<div class="dragGroupTitle">').html(composerList[i].groupName);
-                    var dragGroupList = $('<div class="dragGroupList">');
-                    var composerConfig = composerList[i].composerConfig;
-                    for(var key in composerConfig){
-                        var groupItem = $('<div class="dragItem">').attr("type",key);
-                        var groupItemIcon = $('<div class="dragItemIcon">');
-                        var groupItemIconImg = $('<img src="'+composerType[key].func.classIcon+'" alt="">');
-                        var groupItemLabel = $('<div class="dragItemName">'+composerType[key].func.classTitle+'</div>');
-                        groupItem.append(groupItemIcon).append(groupItemLabel);
-                        groupItemIcon.append(groupItemIconImg);
-                        dragGroupList.append(groupItem);
-                    }
-                    var clearDiv = $('<div class="clear"></div>');
-                    group.append(groupTitle).append(dragGroupList).append(clearDiv);
-                    this.dragListBox.append(group);
-                }
-
+                this.initDragList();
+                this.bindDragList();
 
                 var propertyBox = $("#propertyList");
                 _this.initBodyBg();
-                this.bindDragList();
+
                 $("#designer_save").click(function(e){
                     _this.save();
                     alert("保存成功");
@@ -177,6 +165,51 @@
                     $("#designerView").hide();
                 });
             },
+            initDragList: function(){
+                this.dragList.find(".groupList li").not("#body_setting").remove();
+                this.dragList.find(".groupCenter").not("#bodySettingBox").remove();
+                var groupList = this.dragList.find(".groupList");
+
+                for(var i=this.groupList.length-1;i>=0;i--){
+                    var groupItem = this.groupList[i];
+                    var groupId = "drag_box_"+i;
+                    var li = $("<li>");
+                    li.html(groupItem.groupName).attr("bindshow",groupId);
+                    groupList.prepend(li);
+                    var dragBox = $("<div>").addClass("groupCenter").attr("id",groupId);
+                    groupList.after(dragBox);
+                    if(i==0){
+                        li.addClass("selected");
+                        dragBox.addClass("selected");
+                    }
+                    var childGroup = groupItem.groupList;
+                    for(var j=0;j<childGroup.length;j++){
+                        var childGroupItem = childGroup[j];
+                        var group = $('<div class="dragGroup">');
+                        var groupTitle = $('<div class="dragGroupTitle">').html(childGroupItem.groupName);
+                        var dragGroupList = $('<div class="dragGroupList">');
+                        var composerList = childGroupItem.composerList;
+                        for(var m=0;m<composerList.length;m++){
+                            var composerItem = composerList[m];
+                            var type = composerItem.type;
+                            var title = composerItem.title||composerType[type].func.classTitle;
+                            var icon = composerItem.icon||composerType[type].func.classIcon;
+                            var options = composerItem.options;
+                            var groupItem = $('<div class="dragItem">').attr("type",type).data("options",options);
+                            var groupItemIcon = $('<div class="dragItemIcon">');
+                            var groupItemIconImg = $('<img src="'+icon+'" alt="">');
+                            var groupItemLabel = $('<div class="dragItemName">'+title+'</div>');
+                            groupItem.append(groupItemIcon).append(groupItemLabel);
+                            groupItemIcon.append(groupItemIconImg);
+                            dragGroupList.append(groupItem);
+                        }
+                        var clearDiv = $('<div class="clear"></div>');
+                        group.append(groupTitle).append(dragGroupList).append(clearDiv);
+                        dragBox.append(group);
+                    }
+                }
+
+            },
             initBodyBg : function(){
                 var _this = this;
                 $('#bodyBg').css('backgroundColor', this.bodySetting.bgColor);
@@ -200,7 +233,7 @@
                     }
                 });
             },
-            bindDragList:function(box,selector){
+            bindDragList:function(){
                 var box = $("#dragList");
                 var selector = '.dragItem';
                 var _this = this;
@@ -223,6 +256,7 @@
                     _this.dragging = true;
                     _this.clone = $(this).clone();
                     _this.clone.appendTo($("body"));
+                    _this.clone.data("options",$(this).data("options"));
                     _this.clone.css({
                         position:"absolute"
                         ,left:e.pageX

@@ -3,51 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" href="css/font-awesome-4.7.0/css/fontawesome-all.min.css">
-    <link rel="stylesheet" href="js/jquery-ui-1.12.1/jquery-ui.min.css">
-    <script type="text/javascript" src="js/jquery-1.12.4.min.js"></script>
-    <script type="text/javascript" src="js/jquery-ui-1.12.1/jquery-ui.min.js"></script>
-    <link rel="stylesheet" href="js/bootstrap-3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" href="js/bootstrap-table-1.12.1/bootstrap-table.min.css">
-    <script type="text/javascript" src="js/bootstrap-table-1.12.1/bootstrap-table.min.js"></script>
+    <link rel="stylesheet" href="vendor/css/font-awesome-4.7.0/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="vendor/js/jquery-ui-1.12.1/jquery-ui.min.css">
+    <link rel="stylesheet" href="vendor/js/bootstrap-3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="vendor/js/bootstrap-table-1.12.1/bootstrap-table.min.css">
+    <link rel="stylesheet" href="vendor/js/colorpicker/css/colorpicker.css" media="screen" type="text/css" />
+    <link rel="stylesheet" id="designer_theme" href="css/designer_white.css">
 
-    <link rel="stylesheet" media="screen" type="text/css" href="js/colorpicker/css/colorpicker.css" />
-    <script type="text/javascript" src="js/colorpicker/js/colorpicker.js"></script>
+    <script type="text/javascript" src="vendor/js/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="vendor/js/jquery-ui-1.12.1/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="vendor/js/bootstrap-table-1.12.1/bootstrap-table.min.js"></script>
+    <script type="text/javascript" src="vendor/js/colorpicker/js/colorpicker.js"></script>
+    <script type="text/javascript" src="vendor/js/require.js" class="last"></script>
 
-    <script type="text/javascript" src="js/require.js" class="last"></script>
     <script type="text/javascript">
         $.composerMap = {};
         var basePath = "http://localhost:63342/dragUI/";
         var composerBasePath = basePath+"js/composer/";
+        var composerConfig = {
+            'c_label':composerBasePath+'c_label',
+            'c_iframe':composerBasePath+'c_iframe',
+            'chart_zhuzhuangtu':composerBasePath+'chart_zhuzhuangtu',
+            'chart_bingzhuangtu':composerBasePath+'chart_bingzhuangtu',
+            'chart_zhexiantu':composerBasePath+'chart_zhexiantu'
+        };
         require.config({
             paths:{
                 'composerMap':'js/composer/composerMap',
             }
         });
         require(['composerMap'], function (composerMap){
+            var groupList = [{
+                groupName:"基本",groupList:[{
+                    groupName:"简单组件",composerList:[
+                        {type:"c_label",options:{}}
+                        ,{type:"c_label",title:"test1",options:{property:{private:{info:"test1"}}}}
+                        ,{type:"c_label",title:"test2",icon:basePath+"image/biaoqian_1.png",options:{property:{private:{info:"test2"}}}}
+                    ]
+                },{
+                    groupName:"页面组件",composerList:[
+                        {type:"c_iframe",title:"百度",options:{property:{private:{src:"http://www.baidu.com"}}}}
+                        ,{type:"c_iframe",title:"网易",icon:basePath+"image/iframe_1.png",options:{property:{private:{src:"http://www.163.com"}}}}
+                    ]
+                }]
+            },{
+                groupName:"图表",groupList:[{
+                    groupName:"简单图表",composerList:[
+                        {type:"chart_zhuzhuangtu",options:{}}
+                        ,{type:"chart_bingzhuangtu",options:{}}
+                        ,{type:"chart_zhexiantu",options:{}}
+                    ]
+                }]
+            }];
             composerMap.init({
                 designer:$("#designer"),
-                dragListBox:$("#dragBox"),
-                // defaultBgColor:'#112247'
-                defaultBgColor:'#fff'
+                groupList:groupList,
+                theme:"dark",//dark or white
+                themePath:basePath+"css/"
             });
             composerMap.show();
             $.composerMap = composerMap;
         });
     </script>
-    <!--<link rel="stylesheet" href="css/designer.css">-->
-    <link rel="stylesheet" href="css/designer_white.css">
 </head>
 <body>
 
 <div id="dragList">
     <ul id="groupList" class="groupList">
-        <li class="selected" bindShow="dragBox">控件</li>
-        <li bindShow="bodySettingBox">设置</li>
+        <li bindShow="bodySettingBox" id="body_setting">设置</li>
     </ul>
-    <div id="dragBox" class="groupCenter selected">
-
-    </div>
     <div id="bodySettingBox" class="groupCenter">
         <div class="property_list">
             <div class="property_item">
