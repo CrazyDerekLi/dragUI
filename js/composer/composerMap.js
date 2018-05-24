@@ -21,6 +21,7 @@
             current:null,
             dragging:false,
             clone:undefined,
+            designerType:"absolute",
             theme:"white",
             themePath:basePath+"css/",
             bodySetting:{
@@ -29,7 +30,11 @@
                 bgColor:"#112247",
                 className:""
             },
+            save:function(){
+                alert("保存成功");
+            },
             changeTheme:function(theme){
+
                 this.theme = theme;
                 if(this.theme == "white"){
                     this.bodySetting.bgColor = '#ffffff';
@@ -50,9 +55,11 @@
             },
             init:function(options){
                 var _this = this;
+                this.designerType = options.designerType||this.designerType;//absolute,relative
                 this.designer = options.designer;
                 this.groupList = options.groupList;
                 this.theme = options.theme||this.theme;
+                this.save = options.save||this.save;
 
                 this.changeTheme(this.theme);
 
@@ -62,36 +69,8 @@
                 });
                 this.designer.addClass(this.bodySetting.className);
                 this.designer.html("");
-                this.designer.mouseup(function(e){
-                    if(_this.clone){
-                        var left = e.pageX;
-                        var top = e.pageY;
-                        var container =  _this.designer;
-                        var offset = container.offset();
+                this.bindAbsoluteEvent();
 
-                        var x = left-offset.left;
-                        var y = top-offset.top;
-                        var type = _this.clone.attr("type");
-                        var options = {
-                            classname:"c_label",
-                            box : container,
-                            designer:true,
-                            layout:{
-                                l:x,
-                                t:y
-                            }
-                        };
-                        var _options = _this.clone.data("options")||{};
-                        var newOptions = $.extend({},options,_options);
-                        var composer = new _this.allComposer[type].func(newOptions);
-                        var id = composer.id;
-                        _this.all[id] = composer;
-                        _this.clone.remove();
-                        delete _this.clone;
-                        _this.clone = undefined;
-                    }
-
-                });
                 //鼠标mousdown时取消设计器选中控件
                 $("body").delegate("*","mousedown",function(e){
                     if(
@@ -134,12 +113,12 @@
                 this.initDragList();
                 this.bindDragList();
 
-                var propertyBox = $("#propertyList");
-                _this.initBodyBg();
+                this.initBodyBg();
+                this.initAbsoluteBodySetting();
 
                 $("#designer_save").click(function(e){
-                    _this.save();
-                    alert("保存成功");
+                    var jsonStr = _this._save();
+                    _this.save(jsonStr);
                 });
                 $("#designer_lock").click(function(e){
                     var lock = $(this).attr("lock")+"";
@@ -162,6 +141,39 @@
                 });
                 $("#designerCloseBtn").click(function(e){
                     $("#designerView").hide();
+                });
+            },
+            bindAbsoluteEvent:function(){
+                var _this = this;
+                this.designer.mouseup(function(e){
+                    if(_this.clone){
+                        var left = e.pageX;
+                        var top = e.pageY;
+                        var container =  _this.designer;
+                        var offset = container.offset();
+
+                        var x = left-offset.left;
+                        var y = top-offset.top;
+                        var type = _this.clone.attr("type");
+                        var options = {
+                            classname:"c_label",
+                            box : container,
+                            designer:true,
+                            layout:{
+                                l:x,
+                                t:y
+                            }
+                        };
+                        var _options = _this.clone.data("options")||{};
+                        var newOptions = $.extend({},options,_options);
+                        var composer = new _this.allComposer[type].func(newOptions);
+                        var id = composer.id;
+                        _this.all[id] = composer;
+                        _this.clone.remove();
+                        delete _this.clone;
+                        _this.clone = undefined;
+                    }
+
                 });
             },
             initDragList: function(){
@@ -208,6 +220,14 @@
                     }
                 }
 
+            },
+            initAbsoluteBodySetting:function(){
+                /*
+                <div class="property_item">
+                    <div class="property_label">页面宽度：</div>
+                    <div class="property_info"><input type="text" id="bodyWidth"/></div>
+                </div>
+                * */
             },
             initBodyBg : function(){
                 var _this = this;
@@ -298,10 +318,13 @@
 
                 });
             },
-            show:function(box){
+            show:function(showJson,box){
                 var _box = box||this.designer;
-                var data = window.localStorage.getItem("designerData");
-                data = data?JSON.parse(data):{composerList:[]};
+                var data = showJson||window.localStorage.getItem("designerData");
+                if(typeof(data) == "string"){
+                    data = data || "{'composerList':[]}";
+                    data = JSON.parse(data);
+                }
                 this.bodySetting = data.bodySetting||this.bodySetting;
                 $('#bodyBg').css('backgroundColor', this.bodySetting.bgColor);
                 _box.css({
@@ -318,6 +341,7 @@
                     var id = composer.id;
                     this.all[id] = composer;
                 }
+                return data;
             },
             designerView:function(box){
                 box.html("");
@@ -337,9 +361,13 @@
                 }
 
             },
-            view:function(box){
+            view:function(showJson,box){
                 var _box = box||this.designer;
-                var data = window.localStorage.getItem("designerData");
+                var data = showJson||window.localStorage.getItem("designerData");
+                if(typeof(data) == "string"){
+                    data = data || "{'composerList':[]}";
+                    data = JSON.parse(data);
+                }
                 data = data?JSON.parse(data):{composerList:[]};
                 for(var i=0;data&&data.composerList&&i<data.composerList.length;i++){
                     var composerConfig = data.composerList[i];
@@ -351,7 +379,7 @@
                     this.all[id] = composer;
                 }
             },
-            save:function(){
+            _save:function(){
                 var data = {
                     composerList:[]
                 };
@@ -362,7 +390,6 @@
                 }
                 data.bodySetting = this.bodySetting;
                 var jsonStr = JSON.stringify(data);
-                console.log(jsonStr);
                 window.localStorage.setItem("designerData",jsonStr);
                 return jsonStr;
             }

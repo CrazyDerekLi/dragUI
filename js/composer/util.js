@@ -32,7 +32,11 @@ define([], function(base){
                     }
                 });
             }else if(setting.type == "checkbox"){
+                console.log(val);
                 editor = $("<input type='checkbox'>").val(val);
+                if(val == "1"){
+                    editor.prop("checked","true");
+                }
                 box.html(editor);
                 editor.click(function(){
                     _this.editorChangeData(setting,composer,$(this).is(':checked')?"1":"0");

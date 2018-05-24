@@ -22,7 +22,8 @@ define(['base','util'], function(base,util){
             property:{							//		属性参数
                 private:{
                     id:"",
-                    src:""
+                    src:"",
+                    allowScroll:"1"
                 },						//		私有属性
                 event:{},						//		事件属性
                 data:{}							//		数据属性
@@ -37,7 +38,7 @@ define(['base','util'], function(base,util){
                                 {value:"",type:"spinner",field:["layout","t"],title:"右偏移"},
                                 {value:"",type:"spinner",field:["layout","w"],title:"宽度"},
                                 {value:"",type:"spinner",field:["layout","h"],title:"高度"},
-                                {value:"",type:"spinner",field:["layout","index"],title:"层级"},
+                                {value:"",type:"spinner",field:["layout","index"],title:"层级"}
                             ]
                         },
                         {
@@ -45,17 +46,22 @@ define(['base','util'], function(base,util){
                             childGroupList:[
                                 {value:"",type:"text",field:["property","private","id"],title:"id"},
                                 {value:"",type:"text",field:["property","private","src"],title:"引用路径"},
+                                {value:"",type:"checkbox",field:["property","private","allowScroll"],title:"允许滚动"}
                             ]
                         }
                     ]
                 }
             ],
             createComposer:function(){
-                var iframe = $('<iframe  frameborder="no" border="0" marginwidth="0" marginheight="0" scrolling="no" allowtransparency="yes">').css({
+                var iframe = $('<iframe  frameborder="no" border="0" marginwidth="0" marginheight="0" allowtransparency="yes" >').css({
                     display:"block",
                     width:this.layout.w,
                     height:this.layout.h
                 });
+                console.log(this.property.private.allowScroll);
+                if(this.property.private.allowScroll == "0"){
+                    iframe.attr("scrolling","no");
+                }
                 iframe.attr("src",this.property.private.src).attr("id",this.property.private.id);
                 return iframe;
             },		//		创建控件Dom
