@@ -1,13 +1,9 @@
 require.config({
-    paths:{
-        'base':composerBasePath+'js/composer/base',
-        'util':composerBasePath+'js/composer/util'
-    }
 });
-define(['base','util'], function(base,util){
+define(['base','util'], function(base, util){
     var classname = "c_iframe";
     var classTitle = "引用页面控件";
-    var classIcon = composerBasePath+"image/iframe.png";
+    var classIcon = vendorPath+"dragUI/image/iframe.png";
     function o(options){
         var o1 = {
             id:"",

@@ -1,13 +1,10 @@
 require.config({
-    paths:{
-        'base':composerBasePath+'js/composer/base',
-        'util':composerBasePath+'js/composer/util'
-    }
+
 });
-define(['base','util'], function(base,util){
+define(['base','util'], function(base, util){
     var classname = "c_label";
     var classTitle = "标签";
-    var classIcon = composerBasePath+"image/biaoqian.png";
+    var classIcon = vendorPath+"dragUI/image/biaoqian.png";
     function o(options){
         var o1 = {
             id:"",

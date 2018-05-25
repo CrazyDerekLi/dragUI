@@ -1,7 +1,4 @@
 require.config({
-    paths:{
-        "util":composerBasePath+"js/composer/util"
-    }
 });
 define(["util"], function(util){
 

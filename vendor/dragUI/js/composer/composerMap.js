@@ -45,7 +45,7 @@
                 $("<link>")
                     .attr({ rel: "stylesheet",
                         type: "text/css",
-                        href: composerBasePath+"css/designer_"+this.theme+".css",
+                        href: vendorPath+"dragUI/css/designer_"+this.theme+".css",
                         id:"designer_theme"
                     })
                     .appendTo("head");

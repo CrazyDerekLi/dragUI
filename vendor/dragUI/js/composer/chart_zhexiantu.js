@@ -1,12 +1,9 @@
 require.config({
-    paths:{
-        'base':composerBasePath+'js/composer/base'
-    }
 });
 define(['base'], function(base){
-    var classname = "chart_bingzhuangtu";
-    var classTitle = "饼状图";
-    var classIcon = composerBasePath+"image/biaozhunbingtu.png";
+    var classname = "chart_zhexiantu";
+    var classTitle = "折线图";
+    var classIcon = vendorPath+"dragUI/image/zhexiantu.png";
     function o(options){
         var o1 = {
             id:"",
