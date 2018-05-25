@@ -187,9 +187,9 @@ define(["util"], function(util){
             this.drag.append(this.dragHead);
             this.dragHead.append(this.dragTools);
             this.drag.click(function(e){
-                $.composerMap.designer.find(".designer_drag_obj").removeClass("selected");
+                CM.designer.find(".designer_drag_obj").removeClass("selected");
                 $(this).addClass("selected");
-                $.composerMap.current = _this;
+                CM.current = _this;
             });
             this.drag.draggable({
                 handle: ".drag_msk",
@@ -216,7 +216,7 @@ define(["util"], function(util){
                     _this.layout.t = position.top;
                 }
             });
-            if($.composerMap.lock){
+            if(CM.lock){
                 this.drag.draggable( "option", "revert", true );
             }
             this.drag.resizable({
@@ -328,7 +328,7 @@ define(["util"], function(util){
         destroy:function(){
             this.destroyComposer();
             this.drag.remove();
-            delete $.composerMap.all[this.id];
+            delete CM.all[this.id];
             var propertyBox = $("#propertyList");
             if(propertyBox.get(0)){
                 var bodySettingColorPickerid = $("#bodyBg").data("colorpickerId");
@@ -339,7 +339,7 @@ define(["util"], function(util){
         chooseMe:function(){
             this.box.find(".designer_drag_obj").removeClass("selected");
             this.drag.addClass("selected");
-            $.composerMap.current = this;
+            CM.current = this;
         }
     };
     return base;

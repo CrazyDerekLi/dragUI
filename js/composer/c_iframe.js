@@ -58,7 +58,6 @@ define(['base','util'], function(base,util){
                     width:this.layout.w,
                     height:this.layout.h
                 });
-                console.log(this.property.private.allowScroll);
                 if(this.property.private.allowScroll == "0"){
                     iframe.attr("scrolling","no");
                 }

@@ -3,23 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" href="vendor/css/font-awesome-4.7.0/css/fontawesome-all.min.css">
-    <link rel="stylesheet" href="vendor/js/jquery-ui-1.12.1/jquery-ui.min.css">
-    <link rel="stylesheet" href="vendor/js/bootstrap-3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" href="vendor/js/bootstrap-table-1.12.1/bootstrap-table.min.css">
-    <link rel="stylesheet" href="vendor/js/colorpicker/css/colorpicker.css" media="screen" type="text/css" />
-    <link rel="stylesheet" id="designer_theme" href="css/designer_white.css">
-
-    <script type="text/javascript" src="vendor/js/jquery-1.12.4.min.js"></script>
-    <script type="text/javascript" src="vendor/js/jquery-ui-1.12.1/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="vendor/js/bootstrap-table-1.12.1/bootstrap-table.min.js"></script>
-    <script type="text/javascript" src="vendor/js/colorpicker/js/colorpicker.js"></script>
-    <script type="text/javascript" src="vendor/js/require.js" class="last"></script>
-
     <script type="text/javascript">
-        $.composerMap = {};
         var basePath = "http://localhost:63342/dragUI/";
         var composerBasePath = basePath;
+    </script>
+
+    <script type="text/javascript" src="vendor/js/require.js" class="last"></script>
+    <script type="text/javascript" src="vendor/js/main.js"></script>
+    <script type="text/javascript">
+        var CM = {};
         var composerConfig = {
             'c_label':composerBasePath+'js/composer/c_label',
             'c_iframe':composerBasePath+'js/composer/c_iframe',
@@ -29,7 +21,16 @@
         };
         require.config({
             paths:{
-                'composerMap':composerBasePath+'js/composer/composerMap',
+                'composerMap':composerBasePath+'js/composer/composerMap'
+            },
+            shim:{
+                'composerMap':{
+                    deps:['jquery','bootstrap','jqueryui','bootstrapTable','colorPicker',
+                        'css!../css/designer_white',
+                        'css!../vendor/css/font-awesome-4.7.0/css/fontawesome-all.min'
+                    ],
+                    exports:'composerMap'
+                }
             }
         });
         require(['composerMap'], function (composerMap){
@@ -62,10 +63,12 @@
                     console.log(jsonStr);
                     alert("我的保存成功");
                 },
-                theme:"dark"//dark or white，
+                theme:"white"//dark or white，
             });
-            composerMap.show();
-            $.composerMap = composerMap;
+            composerMap.show({
+                composerList:[]
+            });
+            CM = composerMap;
         });
     </script>
 </head>
