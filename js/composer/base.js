@@ -211,7 +211,8 @@ define(["util"], function(util){
                     ui.helper.css({
                         opacity:1
                     });
-                    var position = ui.helper.position();
+                    var position = ui.position;
+                    console.log(ui);
                     _this.layout.l = position.left;
                     _this.layout.t = position.top;
                 }
