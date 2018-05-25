@@ -321,8 +321,8 @@
             show:function(showJson,box){
                 var _box = box||this.designer;
                 var data = showJson||window.localStorage.getItem("designerData");
+                data = data || '{"composerList":[]}';
                 if(typeof(data) == "string"){
-                    data = data || "{'composerList':[]}";
                     data = JSON.parse(data);
                 }
                 this.bodySetting = data.bodySetting||this.bodySetting;
@@ -364,11 +364,16 @@
             view:function(showJson,box){
                 var _box = box||this.designer;
                 var data = showJson||window.localStorage.getItem("designerData");
+                data = data || '{"composerList":[]}';
                 if(typeof(data) == "string"){
-                    data = data || "{'composerList':[]}";
                     data = JSON.parse(data);
                 }
-                data = data?JSON.parse(data):{composerList:[]};
+                this.bodySetting = data.bodySetting||this.bodySetting;
+                _box.css({
+                    width:this.bodySetting.width,
+                    height:this.bodySetting.height,
+                    background:this.bodySetting.bgColor
+                }).html("");
                 for(var i=0;data&&data.composerList&&i<data.composerList.length;i++){
                     var composerConfig = data.composerList[i];
                     composerConfig.box = _box;
@@ -378,6 +383,7 @@
                     var id = composer.id;
                     this.all[id] = composer;
                 }
+                return data;
             },
             _save:function(){
                 var data = {
