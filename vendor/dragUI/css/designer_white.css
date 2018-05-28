@@ -379,3 +379,23 @@ body{
     background: #000;
     opacity: 0.5;
 }
+.sp-replacer{
+    padding:0;
+    width:100%;
+    border:none;
+    position:relative;
+    height:24px;
+}
+.sp-preview{
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: 100%;
+    border:none;
+    top:0;
+    bottom:0;
+    height:24px;
+}
+.property_info>.color_select{
+    overflow: hidden;
+}

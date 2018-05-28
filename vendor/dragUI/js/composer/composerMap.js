@@ -231,23 +231,31 @@
             },
             initBodyBg : function(){
                 var _this = this;
-                $('#bodyBg').css('backgroundColor', this.bodySetting.bgColor);
-                $('#bodyBg').ColorPicker({
-                    color: this.bodySetting.bgColor,
-                    onShow: function (colpkr) {
-                        $(colpkr).fadeIn(500);
-                        return false;
-                    },
-                    onHide: function (colpkr) {
-                        $(colpkr).fadeOut(500);
-                        return false;
-                    },
-                    onChange: function (hsb, hex, rgb) {
-                        $('#bodyBg').css('backgroundColor', '#' + hex);
-                        $('#bodyBg input').val('#' + hex);
-                        _this.bodySetting.bgColor = "#"+hex;
+                var bg = $("#bodyBg");
+                bg.spectrum({
+                    color:_this.bodySetting.bgColor,
+                    theme: "sp-light",
+                    showInput: true,
+                    showAlpha:true,
+                    showButtons:false,
+                    move:function(color){
+                        var _color = "";
+                        var hexColor = "transparent";
+
+                        if(color) {
+                            hexColor = color.toHexString();
+                        }
+                        if(color.getAlpha()==1){
+                            _color = hexColor;
+                        }else{
+                            var r = parseInt(color._r);
+                            var g = parseInt(color._g);
+                            var b = parseInt(color._b);
+                            _color = 'rgba('+r+','+g+','+b+','+color.getAlpha()+')';
+                        }
+                        _this.bodySetting.bgColor = _color;
                         _this.designer.css({
-                            background:"#"+hex
+                            "background-color":_color
                         });
                     }
                 });
@@ -314,7 +322,6 @@
 
                     $("#bodyHeight").val(_this.bodySetting.height);
 
-                    $("#bodyBg input").val(_this.bodySetting.bgColor);
 
                 });
             },
@@ -326,7 +333,7 @@
                     data = JSON.parse(data);
                 }
                 this.bodySetting = data.bodySetting||this.bodySetting;
-                $('#bodyBg').css('backgroundColor', this.bodySetting.bgColor);
+                $('#bodyBg').spectrum("set", this.bodySetting.bgColor);//设置选择器当前颜色
                 _box.css({
                     width:this.bodySetting.width,
                     height:this.bodySetting.height,

@@ -42,28 +42,34 @@ define([], function(base){
                     _this.editorChangeData(setting,composer,$(this).is(':checked')?"1":"0");
                 });
             }else if(setting.type == "color"){
-                editor = $('<div class="color_picker">');
+                editor = $(' <div class="color_select"></div>');
                 var input = $('<input type="text" readonly="readonly">');
                 editor.append(input);
                 box.html(editor);
 
-                editor.css('backgroundColor', val);
-                editor.find('input').val(val);
+                input.spectrum({
+                    color:val,
+                    theme: "sp-light",
+                    showInput: true,
+                    showAlpha:true,
+                    showButtons:false,
+                    move:function(color){
+                        var _color = "";
+                        var hexColor = "transparent";
 
-                editor.ColorPicker({
-                    color: val,
-                    onShow: function (colpkr) {
-                        $(colpkr).fadeIn(500);
-                        return false;
-                    },
-                    onHide: function (colpkr) {
-                        $(colpkr).fadeOut(500);
-                        return false;
-                    },
-                    onChange: function (hsb, hex, rgb) {
-                        editor.css('backgroundColor', '#' + hex);
-                        editor.find('input').val('#' + hex);
-                        _this.editorChangeData(setting,composer,'#' + hex);
+                        if(color) {
+                            hexColor = color.toHexString();
+                        }
+                        if(color.getAlpha()==1){
+                            _color = hexColor;
+                        }else{
+                            var r = parseInt(color._r);
+                            var g = parseInt(color._g);
+                            var b = parseInt(color._b);
+                            _color = 'rgba('+r+','+g+','+b+','+color.getAlpha()+')';
+                        }
+                        console.log(_color);
+                        _this.editorChangeData(setting,composer,_color);
                     }
                 });
             }

@@ -7,8 +7,10 @@ require.config({
         'jqueryui':"jquery-ui-1.12.1/jquery-ui.min",
         'bootstrap':'bootstrap-3.3.7/js/bootstrap.min',
         'bootstrapTable':'bootstrap-table-1.12.1/bootstrap-table.min',
-        'colorPicker':'colorpicker/js/colorpicker',
+        // 'colorPicker':'colorpicker/js/colorpicker',
         'bootstrapTable_zh':'bootstrap-table-1.12.1/locale/bootstrap-table-zh-CN.min',
+        'spectrum':'spectrum/spectrum',
+        'spectrum_zh':'spectrum/i18n/jquery.spectrum-zh-cn',
         'base':'dragUI/js/composer/base',
         'util':'dragUI/js/composer/util'
     },
@@ -29,9 +31,17 @@ require.config({
             deps:['bootstrapTable'],
             exports:'bootstrapTable_zh'
         },
-        'colorPicker':{
-            deps: ['jquery','css!colorpicker/css/colorpicker'],
-            exports:'colorPicker'
+        // 'colorPicker':{
+        //     deps: ['jquery','css!colorpicker/css/colorpicker'],
+        //     exports:'colorPicker'
+        // },
+        'spectrum':{
+            deps: ['jquery','css!spectrum'],
+            exports:'spectrum'
+        },
+        'spectrum_zh':{
+            deps: ['spectrum'],
+            exports:'spectrum_zh'
         },
         'base':{
             deps: ['util','css!dragUI/css/designer_white','css!font-awesome-4.7.0/css/fontawesome-all.min'],
