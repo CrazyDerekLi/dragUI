@@ -153,25 +153,25 @@ body{
 }
 .property_label{
     position:relative;
-    width:70px;
     bottom:0;
     color:#e0e0e0;
     line-height: 20px;
     white-space: normal;
     word-break: break-all;
-    padding:5px 0 5px 10px;
+    width:40%;
+    float:left;
+    padding:5px 0;
 }
 .property_item{
     position:relative;
     font-size:12px;
     margin:2px 0;
+    clear:both;
 }
 .property_info{
-    position:absolute;
-    left:90px;
-    height:30px;
-    top:50%;
-    margin-top:-15px;
+    position:relative;
+    float:left;
+    width:60%;
 }
 .property_info>*{
     height:24px;
@@ -236,7 +236,6 @@ body{
     margin-top: -5px;
 }
 .property_info .property_btn{
-    width:40px;
     text-align: center;
     background:#fff;
     color:#808080;
@@ -247,6 +246,8 @@ body{
     border-radius: 2px;
     cursor: pointer;
     font-size:12px;
+    width:auto;
+    padding:0 5px;
 }
 .property_info .property_btn.selected{
     background: #2aabd2;
@@ -398,4 +399,7 @@ body{
 }
 .property_info>.color_select{
     overflow: hidden;
+}
+.property_label_title{
+    padding:0 10px;
 }

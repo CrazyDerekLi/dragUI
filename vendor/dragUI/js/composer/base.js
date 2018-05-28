@@ -283,7 +283,8 @@ define(["util"], function(util){
                         var list = sett.childGroupList;
                         for(var _j=0;_j<list.length;_j++){
                             var item = $("<div class='property_item'>");
-                            var itemLabel = $("<div class='property_label'>").html(list[_j].title);
+                            var title = $("<div class='property_label_title'>").html(list[_j].title);
+                            var itemLabel = $("<div class='property_label'>").html(title);
                             var itemEditor = $("<div class='property_info'>");
                             item.append(itemLabel).append(itemEditor);
                             childGroupList.append(item);
@@ -293,6 +294,7 @@ define(["util"], function(util){
                                 util.commonEditor(itemEditor,list[_j],_this);
                             }
                         }
+                        childGroupList.append($("<div class='clear'>"));
 
                     }
                 });

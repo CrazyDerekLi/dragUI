@@ -37,8 +37,8 @@ define(['base','util'], function(base, util){
                         {
                             childGroupName:"布局属性",
                             childGroupList:[
-                                {value:"",type:"spinner",field:["layout","l"],title:"左偏移"},
-                                {value:"",type:"spinner",field:["layout","t"],title:"右偏移"},
+                                {value:"",type:"spinner",field:["layout","l"],title:"左部偏移"},
+                                {value:"",type:"spinner",field:["layout","t"],title:"顶部偏移"},
                                 {value:"",type:"spinner",field:["layout","w"],title:"宽度"},
                                 {value:"",type:"spinner",field:["layout","h"],title:"高度"},
                                 {value:"",type:"spinner",field:["layout","index"],title:"层级"},
@@ -66,7 +66,7 @@ define(['base','util'], function(base, util){
                                         var left = $('<div class="property_btn">居左</div>');
                                         var center = $('<div class="property_btn">居中</div>');
                                         var right = $('<div class="property_btn">居右</div>');
-                                        box.append(left).append(center).append(right);
+                                        box.append(left).append(center).append(right).append(left.clone()).append(center.clone()).append(right.clone());
                                         var val = util.getComposerValue(setting.field,composer);
                                         if(val == "left"){
                                             left.addClass("selected");

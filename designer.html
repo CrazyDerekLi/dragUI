@@ -70,7 +70,7 @@
                     console.log(jsonStr);
                     alert("我的保存成功");
                 },
-                theme:"white"//dark or white，
+                theme:"dark"//dark or white，
             });
             composerMap.show(
             //     {
@@ -90,15 +90,27 @@
     <div id="bodySettingBox" class="groupCenter">
         <div class="property_list">
             <div class="property_item">
-                <div class="property_label">页面宽度：</div>
+                <div class="property_label">
+                    <div class="property_label_title">
+                        页面宽度：
+                    </div>
+                </div>
                 <div class="property_info"><input type="text" id="bodyWidth"/></div>
             </div>
             <div class="property_item">
-                <div class="property_label">页面高度：</div>
+                <div class="property_label">
+                    <div class="property_label_title">
+                        页面高度：
+                    </div>
+                </div>
                 <div class="property_info"><input type="text" id="bodyHeight"/></div>
             </div>
             <div class="property_item">
-                <div class="property_label">背景颜色：</div>
+                <div class="property_label">
+                    <div class="property_label_title">
+                        背景颜色：
+                    </div>
+                </div>
                 <div class="property_info">
                     <div class="color_select">
                         <input id="bodyBg" type="text" readonly="readonly">
