@@ -59,7 +59,7 @@ define(['base','util'], function(base, util){
                             childGroupName:"样式设置",
                             childGroupList:[
                                 {value:"",type:"color",field:["property","style","fontColor"],title:"字体颜色"},
-                                {value:"",type:"spinner",field:["property","style","fontSize"],title:"字体大小"},
+                                {value:"",type:"spinner",field:["property","style","fontSize"],title:"字体大小",options:{min:12,max:24}},
                                 {value:"",type:"checkbox",field:["property","style","hasBackground"],title:"使用背景"},
                                 {value:"",type:"color",field:["property","style","background"],title:"背景色"},
                                 {value:"",type:"self",field:["property","style","textAlign"],title:"对齐方式",editor:function(box,setting,composer){

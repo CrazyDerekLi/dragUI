@@ -19,18 +19,18 @@ define([], function(base){
             }else if(setting.type == "spinner"){
                 editor = $("<input type='text'>").val(val);
                 box.html(editor);
-                editor.spinner({
-                    min:0,
-                    start:function(event, ui){
-                        _this.editorChangeData(setting,composer,$(this).val());
-                    },
-                    stop:function(event, ui){
-                        _this.editorChangeData(setting,composer,$(this).val());
-                    },
-                    change:function(event, ui){
-                        _this.editorChangeData(setting,composer,$(this).val());
-                    }
-                });
+                var options = setting.options||{};
+                options.min = options.min || 0;
+                options.start = function(event, ui){
+                    _this.editorChangeData(setting,composer,$(this).val());
+                };
+                options.stop = function(event, ui){
+                    _this.editorChangeData(setting,composer,$(this).val());
+                };
+                options.change = function(event, ui){
+                    _this.editorChangeData(setting,composer,$(this).val());
+                };
+                editor.spinner(options);
             }else if(setting.type == "checkbox"){
                 console.log(val);
                 editor = $("<input type='checkbox'>").val(val);
@@ -53,22 +53,12 @@ define([], function(base){
                     showInput: true,
                     showAlpha:true,
                     showButtons:false,
+                    preferredFormat:'hex',
                     move:function(color){
-                        var _color = "";
-                        var hexColor = "transparent";
-
-                        if(color) {
-                            hexColor = color.toHexString();
-                        }
-                        if(color.getAlpha()==1){
-                            _color = hexColor;
-                        }else{
-                            var r = parseInt(color._r);
-                            var g = parseInt(color._g);
-                            var b = parseInt(color._b);
-                            _color = 'rgba('+r+','+g+','+b+','+color.getAlpha()+')';
-                        }
-                        console.log(_color);
+                        var r = parseInt(color._r);
+                        var g = parseInt(color._g);
+                        var b = parseInt(color._b);
+                        var _color = 'rgba('+r+','+g+','+b+','+color.getAlpha()+')';
                         _this.editorChangeData(setting,composer,_color);
                     }
                 });

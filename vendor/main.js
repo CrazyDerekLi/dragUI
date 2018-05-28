@@ -7,7 +7,6 @@ require.config({
         'jqueryui':"jquery-ui-1.12.1/jquery-ui.min",
         'bootstrap':'bootstrap-3.3.7/js/bootstrap.min',
         'bootstrapTable':'bootstrap-table-1.12.1/bootstrap-table.min',
-        // 'colorPicker':'colorpicker/js/colorpicker',
         'bootstrapTable_zh':'bootstrap-table-1.12.1/locale/bootstrap-table-zh-CN.min',
         'spectrum':'spectrum/spectrum',
         'spectrum_zh':'spectrum/i18n/jquery.spectrum-zh-cn',
@@ -31,10 +30,6 @@ require.config({
             deps:['bootstrapTable'],
             exports:'bootstrapTable_zh'
         },
-        // 'colorPicker':{
-        //     deps: ['jquery','css!colorpicker/css/colorpicker'],
-        //     exports:'colorPicker'
-        // },
         'spectrum':{
             deps: ['jquery','css!spectrum'],
             exports:'spectrum'

@@ -238,21 +238,12 @@
                     showInput: true,
                     showAlpha:true,
                     showButtons:false,
+                    preferredFormat:'hex',
                     move:function(color){
-                        var _color = "";
-                        var hexColor = "transparent";
-
-                        if(color) {
-                            hexColor = color.toHexString();
-                        }
-                        if(color.getAlpha()==1){
-                            _color = hexColor;
-                        }else{
-                            var r = parseInt(color._r);
-                            var g = parseInt(color._g);
-                            var b = parseInt(color._b);
-                            _color = 'rgba('+r+','+g+','+b+','+color.getAlpha()+')';
-                        }
+                        var r = parseInt(color._r);
+                        var g = parseInt(color._g);
+                        var b = parseInt(color._b);
+                        var _color = 'rgba('+r+','+g+','+b+','+color.getAlpha()+')';
                         _this.bodySetting.bgColor = _color;
                         _this.designer.css({
                             "background-color":_color
