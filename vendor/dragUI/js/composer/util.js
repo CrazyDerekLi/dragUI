@@ -78,17 +78,20 @@ define([], function(base){
                 return o;
             }
         },
-        setComposerValue:function(list,o,value){
+        setComposerValue:function(list,o,value,type){
             if(list.length>1){
                 var _o = o[list[0]];
                 var _list = list.slice(1)||[];
-                this.setComposerValue(_list,_o,value);
+                this.setComposerValue(_list,_o,value,type);
             }else if(list.length == 1){
+                if(type=="spinner"){
+                    value = parseInt(value);
+                }
                 o[list[0]] = value;
             }
         },
         editorChangeData:function(setting,composer,value){
-            this.setComposerValue(setting.field,composer,value);
+            this.setComposerValue(setting.field,composer,value,setting.type);
             composer._syncUI();
             composer.chooseMe();
         }

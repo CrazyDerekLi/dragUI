@@ -152,24 +152,26 @@ body{
     padding:4px 0;
 }
 .property_label{
-    position:absolute;
-    left:0;
+    position:relative;
     width:70px;
-    top:0;
     bottom:0;
     color:#333;
-    padding-left:10px;
-    line-height: 30px;
+    line-height: 20px;
+    white-space: normal;
+    word-break: break-all;
+    padding:5px 0 5px 10px;
 }
 .property_item{
     position:relative;
-    padding-left:80px;
     font-size:12px;
     margin:2px 0;
 }
 .property_info{
-    min-height: 30px;
-    position:relative;
+    position:absolute;
+    left:90px;
+    height:30px;
+    top:50%;
+    margin-top:-15px;
 }
 .property_info>*{
     height:24px;
