@@ -403,3 +403,24 @@ body{
 .property_label_title{
     padding:0 10px;
 }
+.property_info>.editor_slider>.ui-slider>.slider_style{
+    width: 2em;
+    height: 1.6em;
+    top: 50%;
+    margin-top: -.8em;
+    text-align: center;
+    line-height: 1.6em;
+    margin-left:-1em;
+}
+.editor_slider{
+    padding:8px 0;
+    position:relative;
+}
+.editor_slider .slider-dw{
+    position:absolute;
+    right:0;
+    top:0;
+    line-height:30px;
+    color:#333;
+    bottom:0;
+}

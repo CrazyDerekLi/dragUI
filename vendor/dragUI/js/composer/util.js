@@ -62,6 +62,39 @@ define([], function(base){
                         _this.editorChangeData(setting,composer,_color);
                     }
                 });
+            }else if(setting.type == "slider"){
+                editor = $('<div class="editor_slider">');
+
+                var slider = $('<div>');
+                var handle = $('<div class="slider_style ui-slider-handle"></div>');
+                slider.append(handle);
+                editor.append(slider);
+                var options = setting.options||{};
+                if(options.dw){
+                    var dwWidth = options.dwWidth||24;
+                    var align = options.align||"right";
+                    slider.css({
+                        'margin-right':dwWidth
+                    })
+                    var dw = $("<div class='slider-dw'>");
+                    dw.css({
+                        'text-align':align,
+                        width:dwWidth
+                    });
+                    dw.html(options.dw);
+                    editor.append(dw);
+                }
+                box.html(editor);
+                slider.slider({
+                    create: function() {
+                        handle.text( $( this ).slider( "value" ));
+                    },
+                    slide: function( event, ui ) {
+                        handle.text( ui.value);
+                        _this.editorChangeData(setting,composer,ui.value);
+                    }
+                });
+
             }
 
         },
