@@ -4,7 +4,6 @@ require.config({
     }
 });
 define(['iframeConfig'], function(iframeConfig){
-    console.log(iframeConfig);
     (function($, h, c) {
         var a = $([]), e = $.resize = $.extend($.resize, {}), i, k = "setTimeout", j = "resize", d = j
             + "-special-event", b = "delay", f = "throttleWindow";
@@ -97,7 +96,6 @@ define(['iframeConfig'], function(iframeConfig){
                 };
                 editor.spinner(options);
             }else if(setting.type == "checkbox"){
-                console.log(val);
                 editor = $("<input type='checkbox'>").val(val);
                 if(val == "1"){
                     editor.prop("checked","true");
@@ -244,7 +242,6 @@ define(['iframeConfig'], function(iframeConfig){
                         _w.composer = composer;
                         _w.theme = CM.theme;
                         propertyContainerBox.resize(function(e){
-                            console.log("resize");
                             iframe.css({
                                 width:propertyContainerBox.width(),
                                 height:propertyContainerBox.height()
@@ -254,7 +251,9 @@ define(['iframeConfig'], function(iframeConfig){
                     });
                 }else{
                     group.data("setting",propertySetting[i].groupList);
+                    group.data("composer",_this);
                     group.click(function(e){
+                        var composer = $(this).data("composer");
                         groupListBox.find("li").removeClass("selected");
                         $(this).addClass("selected");
                         var settingData = $(this).data("setting");
@@ -277,9 +276,9 @@ define(['iframeConfig'], function(iframeConfig){
                                 item.append(itemLabel).append(itemEditor);
                                 childGroupList.append(item);
                                 if(list[_j].editor){
-                                    list[_j].editor(itemEditor,list[_j],_this);
+                                    list[_j].editor(itemEditor,list[_j],composer);
                                 }else{
-                                    util.commonEditor(itemEditor,list[_j],_this);
+                                    util.commonEditor(itemEditor,list[_j],composer);
                                 }
                             }
                             childGroupList.append($("<div class='clear'>"));
@@ -301,12 +300,19 @@ define(['iframeConfig'], function(iframeConfig){
                 var _this = composer;
                 var propertySetting = _this[propertySettingKey];
                 var index = groupListBox.find("li").index(groupListBox.find("li.selected"));
-                var groupList = propertySetting[index].groupList;
-                groupListBox.find("li:eq("+index+")").data("setting",groupList).trigger("click");
+                if(index>=propertySetting.length){
+                    index = 0;
+                }
+                if(propertySetting.length>0 && propertySetting[index]){
+                    var groupList = propertySetting[index].groupList;
+                    groupListBox.find("li:eq("+index+")").data("setting",groupList).trigger("click");
+                }
+
             }
 
         },
         showProperty:function(propertyCode){
+            $(".propertyList").hide();
             var boxid = propertyCode+"PropertyList";
             var box = $("#"+boxid);
             box.show();
@@ -318,19 +324,19 @@ define(['iframeConfig'], function(iframeConfig){
             var groupid = propertyCode+"PropertyGroupList";
             var containerid = propertyCode+"PropertyBox";
             var box = $("#"+boxid);
-            var groupListBox = $("#"+groupid);
-            var propertyContainerBox = $("#"+containerid);
             if(!box.get(0)){
                 box = $('<div id="'+boxid+'" class="propertyList">');
                 box.css({
                     display:"none",
                     'z-index':101
                 });
-                groupListBox = $('<div id="'+groupid+'" class="groupList">');
-                propertyContainerBox = $('<div id="'+containerid+'" class="groupCenter selected">');
-                box.append(groupListBox).append(propertyContainerBox);
                 box.appendTo($("body"));
             }
+            box.html("");
+            var groupListBox = $('<div id="'+groupid+'" class="groupList">');
+            var propertyContainerBox = $('<div id="'+containerid+'" class="groupCenter selected">');
+            box.append(groupListBox).append(propertyContainerBox);
+
 
             var _this = composer;
 

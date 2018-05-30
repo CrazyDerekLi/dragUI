@@ -69,7 +69,13 @@
                 });
                 this.designer.addClass(this.bodySetting.className);
                 this.designer.html("");
-                this.bindAbsoluteEvent();
+                console.log(this.designerType);
+                if(this.designerType == "relative"){
+
+                }else{
+                    this.bindAbsoluteEvent();
+                }
+
 
                 //鼠标mousdown时取消设计器选中控件
                 $("body").delegate("*","mousedown",function(e){
