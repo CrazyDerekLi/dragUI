@@ -135,6 +135,9 @@ define(['iframeConfig'], function(iframeConfig){
                 slider.append(handle);
                 editor.append(slider);
                 var options = setting.options||{};
+                var _formatter = options.formatter||function(val,options){
+                    return val;
+                };
                 if(options.dw){
                     var dwWidth = options.dwWidth||24;
                     var align = options.align||"right";
@@ -153,7 +156,6 @@ define(['iframeConfig'], function(iframeConfig){
                 slider.slider({
                     create: function() {
                         val = val+""||"";
-                        console.log(val);
                         var slider_val = val.replace(/[^0-9]/ig,"");
                         $( this ).slider({
                             value : slider_val
@@ -162,7 +164,7 @@ define(['iframeConfig'], function(iframeConfig){
                     },
                     slide: function( event, ui ) {
                         handle.text( ui.value);
-                        _this.editorChangeData(setting,composer,ui.value+options.dw);
+                        _this.editorChangeData(setting,composer,_formatter(ui.value,options));
                     }
                 });
 
