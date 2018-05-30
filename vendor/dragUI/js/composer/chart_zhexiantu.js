@@ -23,6 +23,28 @@ define(['base','util'], function(base,util){
                 event:{},						//		事件属性
                 data:{}							//		数据属性
             },
+            propertySetting:[
+                {
+                    groupName:"设置",groupList:[
+                        {
+                            childGroupName:"布局属性",
+                            childGroupList:[
+                                {value:"",type:"spinner",field:["layout","l"],title:"左部偏移"},
+                                {value:"",type:"spinner",field:["layout","t"],title:"顶部偏移"},
+                                {value:"",type:"spinner",field:["layout","w"],title:"宽度"},
+                                {value:"",type:"spinner",field:["layout","h"],title:"高度"},
+                                {value:"",type:"spinner",field:["layout","index"],title:"层级"},
+                            ]
+                        },
+                        {
+                            childGroupName:"私有属性",
+                            childGroupList:[
+                                {value:"",type:"text",field:["property","private","id"],title:"id"}
+                            ]
+                        }
+                    ]
+                }
+            ],
             dataPropertySetting:[
                 {
                     groupName:"设置",groupList:[
@@ -43,6 +65,9 @@ define(['base','util'], function(base,util){
                             ]
                         }
                     ]
+                }, {
+                    groupName:"test1",
+                    groupType:"test"
                 }
             ],
             createComposer:function(){
@@ -73,6 +98,7 @@ define(['base','util'], function(base,util){
             setValue:function(value){},			//		控件赋值
             getValue:function(){},				//		控件取值
             afterDrag:function(){
+
             },						//		拖拽结束事件
             afterResize:function(){
             }						//		调整列宽结束事件

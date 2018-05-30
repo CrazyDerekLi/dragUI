@@ -1,9 +1,74 @@
 require.config({
     paths:{
-
+        iframeConfig:vendorPath+"dragUI/js/composer/iframeConfig"
     }
 });
-define([], function(base){
+define(['iframeConfig'], function(iframeConfig){
+    console.log(iframeConfig);
+    (function($, h, c) {
+        var a = $([]), e = $.resize = $.extend($.resize, {}), i, k = "setTimeout", j = "resize", d = j
+            + "-special-event", b = "delay", f = "throttleWindow";
+        e[b] = 350;
+        e[f] = true;
+        $.event.special[j] = {
+            setup : function() {
+                if (!e[f] && this[k]) {
+                    return false
+                }
+                var l = $(this);
+                a = a.add(l);
+                $.data(this, d, {
+                    w : l.width(),
+                    h : l.height()
+                });
+                if (a.length === 1) {
+                    g()
+                }
+            },
+            teardown : function() {
+                if (!e[f] && this[k]) {
+                    return false
+                }
+                var l = $(this);
+                a = a.not(l);
+                l.removeData(d);
+                if (!a.length) {
+                    clearTimeout(i)
+                }
+            },
+            add : function(l) {
+                if (!e[f] && this[k]) {
+                    return false
+                }
+                var n;
+                function m(s, o, p) {
+                    var q = $(this), r = $.data(this, d);
+                    r.w = o !== c ? o : q.width();
+                    r.h = p !== c ? p : q.height();
+                    n.apply(this, arguments)
+                }
+                if ($.isFunction(l)) {
+                    n = l;
+                    return m
+                } else {
+                    n = l.handler;
+                    l.handler = m
+                }
+            }
+        };
+        function g() {
+            i = h[k](function() {
+                a.each(function() {
+                    var n = $(this), m = n.width(), l = n.height(), o = $
+                        .data(this, d);
+                    if (m !== o.w || l !== o.h) {
+                        n.trigger(j, [ o.w = m, o.h = l ])
+                    }
+                });
+                g()
+            }, e[b])
+        }
+    })(jQuery, this);
     var o = {
         commonEditor:function (box,setting,composer){
             var editor = undefined;
@@ -159,39 +224,69 @@ define([], function(base){
             groupListBox.html("");
             for(var i=0;propertySetting&&i<propertySetting.length;i++){
                 var groupName = propertySetting[i].groupName;
-                var group = $("<li>").html(groupName).data("setting",propertySetting[i].groupList);
-                group.click(function(e){
-                    groupListBox.find("li").removeClass("selected");
-                    $(this).addClass("selected");
-                    var settingData = $(this).data("setting");
-                    propertyContainerBox.html("");
-                    for(var _i=0;_i<settingData.length;_i++){
-                        var sett = settingData[_i];
-                        var childGroup = $("<div class='propertyGroup'>");
-                        propertyContainerBox.append(childGroup);
-                        var childGroupTitle = $("<div class='property_title'>").html(sett.childGroupName);
-                        var childGroupList = $("<div class='property_list'>");
-                        childGroup.append(childGroupTitle);
-                        childGroup.append(childGroupList);
 
-                        var list = sett.childGroupList;
-                        for(var _j=0;_j<list.length;_j++){
-                            var item = $("<div class='property_item'>");
-                            var title = $("<div class='property_label_title'>").html(list[_j].title);
-                            var itemLabel = $("<div class='property_label'>").html(title);
-                            var itemEditor = $("<div class='property_info'>");
-                            item.append(itemLabel).append(itemEditor);
-                            childGroupList.append(item);
-                            if(list[_j].editor){
-                                list[_j].editor(itemEditor,list[_j],_this);
-                            }else{
-                                util.commonEditor(itemEditor,list[_j],_this);
+                var groupType = propertySetting[i].groupType;
+                var group = $("<li>").html(groupName)
+                if(groupType){
+                    var url = iframeConfig[groupType];
+                    group.data("setting",propertySetting[i]);
+                    group.click(function(e){
+                        groupListBox.find("li").removeClass("selected");
+                        $(this).addClass("selected");
+                        var iframe = $('<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" allowtransparency="yes" >');
+                        iframe.attr("src",url);
+                        propertyContainerBox.html(iframe).css({
+                            "overflow":"hidden"
+                        });
+                        _w = iframe.get(0).contentWindow;
+                        _w.composer = composer;
+                        _w.theme = CM.theme;
+                        propertyContainerBox.resize(function(e){
+                            console.log("resize");
+                            iframe.css({
+                                width:propertyContainerBox.width(),
+                                height:propertyContainerBox.height()
+                            });
+                        });
+                        propertyContainerBox.resize();
+                    });
+                }else{
+                    group.data("setting",propertySetting[i].groupList);
+                    group.click(function(e){
+                        groupListBox.find("li").removeClass("selected");
+                        $(this).addClass("selected");
+                        var settingData = $(this).data("setting");
+                        propertyContainerBox.html("");
+                        for(var _i=0;_i<settingData.length;_i++){
+                            var sett = settingData[_i];
+                            var childGroup = $("<div class='propertyGroup'>");
+                            propertyContainerBox.append(childGroup);
+                            var childGroupTitle = $("<div class='property_title'>").html(sett.childGroupName);
+                            var childGroupList = $("<div class='property_list'>");
+                            childGroup.append(childGroupTitle);
+                            childGroup.append(childGroupList);
+
+                            var list = sett.childGroupList;
+                            for(var _j=0;_j<list.length;_j++){
+                                var item = $("<div class='property_item'>");
+                                var title = $("<div class='property_label_title'>").html(list[_j].title);
+                                var itemLabel = $("<div class='property_label'>").html(title);
+                                var itemEditor = $("<div class='property_info'>");
+                                item.append(itemLabel).append(itemEditor);
+                                childGroupList.append(item);
+                                if(list[_j].editor){
+                                    list[_j].editor(itemEditor,list[_j],_this);
+                                }else{
+                                    util.commonEditor(itemEditor,list[_j],_this);
+                                }
                             }
-                        }
-                        childGroupList.append($("<div class='clear'>"));
+                            childGroupList.append($("<div class='clear'>"));
 
-                    }
-                });
+                        }
+                    });
+                }
+
+
                 group.appendTo(groupListBox);
             }
             groupListBox.find("li").first().trigger("click");
@@ -213,6 +308,47 @@ define([], function(base){
             var boxid = propertyCode+"PropertyList";
             var box = $("#"+boxid);
             box.show();
+        },
+        initIframeProperty:function(composer,propertyCode,propertySettingKey){
+            var util = this;
+            propertyCode = propertyCode||"";
+            var boxid = propertyCode+"PropertyList";
+            var groupid = propertyCode+"PropertyGroupList";
+            var containerid = propertyCode+"PropertyBox";
+            var box = $("#"+boxid);
+            var groupListBox = $("#"+groupid);
+            var propertyContainerBox = $("#"+containerid);
+            if(!box.get(0)){
+                box = $('<div id="'+boxid+'" class="propertyList">');
+                box.css({
+                    display:"none",
+                    'z-index':101
+                });
+                groupListBox = $('<div id="'+groupid+'" class="groupList">');
+                propertyContainerBox = $('<div id="'+containerid+'" class="groupCenter selected">');
+                box.append(groupListBox).append(propertyContainerBox);
+                box.appendTo($("body"));
+            }
+
+            var _this = composer;
+
+            var propertySetting = _this[propertySettingKey];
+
+            groupListBox.html("");
+            for(var i=0;propertySetting&&i<propertySetting.length;i++){
+                var groupName = propertySetting[i].groupName;
+                var groupType = propertySetting[i].groupType;
+                var url = iframeConfig[groupType];
+                var group = $("<li>").html(groupName).data("setting",propertySetting[i]);
+                group.click(function(e){
+                    groupListBox.find("li").removeClass("selected");
+                    $(this).addClass("selected");
+                    propertyContainerBox.load(url);
+                    propertyContainerBox.data("composer",composer);
+                });
+                group.appendTo(groupListBox);
+            }
+            groupListBox.find("li").first().trigger("click");
         }
 
     };
