@@ -87,13 +87,20 @@ define([], function(base){
                 box.html(editor);
                 slider.slider({
                     create: function() {
+                        val = val+""||"";
+                        console.log(val);
+                        var slider_val = val.replace(/[^0-9]/ig,"");
+                        $( this ).slider({
+                            value : slider_val
+                        })
                         handle.text( $( this ).slider( "value" ));
                     },
                     slide: function( event, ui ) {
                         handle.text( ui.value);
-                        _this.editorChangeData(setting,composer,ui.value);
+                        _this.editorChangeData(setting,composer,ui.value+options.dw);
                     }
                 });
+
 
             }
 
@@ -123,6 +130,89 @@ define([], function(base){
             this.setComposerValue(setting.field,composer,value,setting.type);
             composer._syncUI();
             composer.chooseMe();
+        },
+        initProperty:function(composer,propertyCode,propertySettingKey){
+            var util = this;
+            propertyCode = propertyCode||"";
+            var boxid = propertyCode+"PropertyList";
+            var groupid = propertyCode+"PropertyGroupList";
+            var containerid = propertyCode+"PropertyBox";
+            var box = $("#"+boxid);
+            var groupListBox = $("#"+groupid);
+            var propertyContainerBox = $("#"+containerid);
+            if(!box.get(0)){
+                box = $('<div id="'+boxid+'" class="propertyList">');
+                box.css({
+                    display:"none",
+                    'z-index':101
+                });
+                groupListBox = $('<div id="'+groupid+'" class="groupList">');
+                propertyContainerBox = $('<div id="'+containerid+'" class="groupCenter selected">');
+                box.append(groupListBox).append(propertyContainerBox);
+                box.appendTo($("body"));
+            }
+
+            var _this = composer;
+
+            var propertySetting = _this[propertySettingKey];
+
+            groupListBox.html("");
+            for(var i=0;propertySetting&&i<propertySetting.length;i++){
+                var groupName = propertySetting[i].groupName;
+                var group = $("<li>").html(groupName).data("setting",propertySetting[i].groupList);
+                group.click(function(e){
+                    groupListBox.find("li").removeClass("selected");
+                    $(this).addClass("selected");
+                    var settingData = $(this).data("setting");
+                    propertyContainerBox.html("");
+                    for(var _i=0;_i<settingData.length;_i++){
+                        var sett = settingData[_i];
+                        var childGroup = $("<div class='propertyGroup'>");
+                        propertyContainerBox.append(childGroup);
+                        var childGroupTitle = $("<div class='property_title'>").html(sett.childGroupName);
+                        var childGroupList = $("<div class='property_list'>");
+                        childGroup.append(childGroupTitle);
+                        childGroup.append(childGroupList);
+
+                        var list = sett.childGroupList;
+                        for(var _j=0;_j<list.length;_j++){
+                            var item = $("<div class='property_item'>");
+                            var title = $("<div class='property_label_title'>").html(list[_j].title);
+                            var itemLabel = $("<div class='property_label'>").html(title);
+                            var itemEditor = $("<div class='property_info'>");
+                            item.append(itemLabel).append(itemEditor);
+                            childGroupList.append(item);
+                            if(list[_j].editor){
+                                list[_j].editor(itemEditor,list[_j],_this);
+                            }else{
+                                util.commonEditor(itemEditor,list[_j],_this);
+                            }
+                        }
+                        childGroupList.append($("<div class='clear'>"));
+
+                    }
+                });
+                group.appendTo(groupListBox);
+            }
+            groupListBox.find("li").first().trigger("click");
+        },
+        updateProperty:function(composer,propertyCode,propertySettingKey){
+            propertyCode = propertyCode||"";
+            var groupid = propertyCode+"PropertyGroupList";
+            var groupListBox = $("#"+groupid);
+            if(groupListBox.get(0)){
+                var _this = composer;
+                var propertySetting = _this[propertySettingKey];
+                var index = groupListBox.find("li").index(groupListBox.find("li.selected"));
+                var groupList = propertySetting[index].groupList;
+                groupListBox.find("li:eq("+index+")").data("setting",groupList).trigger("click");
+            }
+
+        },
+        showProperty:function(propertyCode){
+            var boxid = propertyCode+"PropertyList";
+            var box = $("#"+boxid);
+            box.show();
         }
 
     };

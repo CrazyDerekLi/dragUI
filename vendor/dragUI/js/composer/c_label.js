@@ -118,12 +118,6 @@ define(['base','util'], function(base, util){
             initSelfProperty:function(){			//		初始化控件属性
 
             },
-            getTools:function(){
-                var tools = [];
-                var data = $("<i class='fa fa-database' title='数据'>");
-                tools.push(data);
-                return tools;
-            },
             saveProperty:function(){},			//		保存控件属性
 
             setData:function(data){},			//		设置控件数据

@@ -76,7 +76,7 @@
                     if(
                         !$(e.target).hasClass("colorpicker")
                         && !$(e.target).parents(".colorpicker").get(0)
-                        && !$(e.target).parents("#propertyList").get(0)
+                        && !$(e.target).parents(".propertyList").get(0)
                         && !$(e.target).parents(".designer_drag_tools").get(0)
                     ){
                         _this.designer.find(".designer_drag_obj").removeClass("selected");
@@ -95,15 +95,11 @@
                     if(
                         !$(e.target).hasClass("colorpicker")
                         && !$(e.target).parents(".colorpicker").get(0)
-                        && !$(e.target).parents("#propertyList").get(0)
+                        && !$(e.target).parents(".propertyList").get(0)
                         && !$(e.target).parents(".designer_drag_tools").get(0)
                     ){
-                        var propertyBox = $("#propertyList");
-                        if(propertyBox.get(0)){
-                            var bodySettingColorPickerid = $("#bodyBg").data("colorpickerId");
-                            $("body .colorpicker").not("#"+bodySettingColorPickerid).remove();
-
-                            propertyBox.hide();
+                        if($(".propertyList").get(0)){
+                            $(".propertyList").hide();
                         }
                     }
 

@@ -135,7 +135,8 @@ define(["util"], function(util){
             setting.mousedown(function(e){
                 e.preventDefault();
                 e.stopPropagation();
-                _this.initProperty();
+                util.initProperty(_this,"base","propertySetting");
+                util.showProperty("base");
             });
             up.mousedown(function(e){
                 e.preventDefault();
@@ -209,9 +210,10 @@ define(["util"], function(util){
                         opacity:1
                     });
                     var position = ui.position;
-                    console.log(ui);
                     _this.layout.l = position.left;
                     _this.layout.t = position.top;
+                    util.updateProperty(_this,"base","propertySetting");
+                    _this.afterDrag();
                 }
             });
             if(CM.lock){
@@ -222,6 +224,9 @@ define(["util"], function(util){
                 resize:function(event,ui){
                     _this.layout.w = ui.size.width;
                     _this.layout.h = ui.size.height;
+                },
+                stop:function(){
+                    util.updateProperty(_this,"base","propertySetting");
                     _this.afterResize(_this.composer);
                 }
             });
@@ -256,53 +261,6 @@ define(["util"], function(util){
         createComposer:function(){},
         afterCreateComposer:function(){},	//		创建控件追加到页面后的回调
         bindEvent:function(){},				//		给控件绑定事件
-        initProperty:function(){
-            var _this = this;
-            var propertyBox = $("#propertyList");
-            propertyBox.show();
-            var propertySetting = this.propertySetting;
-            $("#propertyGroupList").html("");
-            for(var i=0;propertySetting&&i<propertySetting.length;i++){
-                var groupName = propertySetting[i].groupName;
-                var group = $("<li>").html(groupName).data("setting",propertySetting[i].groupList);
-                group.click(function(e){
-                    $("#propertyGroupList li").removeClass("selected");
-                    $(this).addClass("selected");
-                    var settingData = $(this).data("setting");
-                    var propertyBox = $("#propertyBox");
-                    propertyBox.html("");
-                    for(var _i=0;_i<settingData.length;_i++){
-                        var sett = settingData[_i];
-                        var childGroup = $("<div class='propertyGroup'>");
-                        propertyBox.append(childGroup);
-                        var childGroupTitle = $("<div class='property_title'>").html(sett.childGroupName);
-                        var childGroupList = $("<div class='property_list'>");
-                        childGroup.append(childGroupTitle);
-                        childGroup.append(childGroupList);
-
-                        var list = sett.childGroupList;
-                        for(var _j=0;_j<list.length;_j++){
-                            var item = $("<div class='property_item'>");
-                            var title = $("<div class='property_label_title'>").html(list[_j].title);
-                            var itemLabel = $("<div class='property_label'>").html(title);
-                            var itemEditor = $("<div class='property_info'>");
-                            item.append(itemLabel).append(itemEditor);
-                            childGroupList.append(item);
-                            if(list[_j].editor){
-                                list[_j].editor(itemEditor,list[_j],_this);
-                            }else{
-                                util.commonEditor(itemEditor,list[_j],_this);
-                            }
-                        }
-                        childGroupList.append($("<div class='clear'>"));
-
-                    }
-                });
-                group.appendTo($("#propertyGroupList"));
-            }
-            $("#propertyGroupList li").first().trigger("click");
-            this.initSelfProperty();
-        },			//		初始化控件属性
         getSettings:function(){
             var o = {
                 id:this.id,

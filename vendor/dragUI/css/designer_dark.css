@@ -3,7 +3,7 @@ body{
     margin:0;
     background: #01132d;
 }
-#dragList,#propertyList{
+#dragList,#propertyList,.propertyList{
     width:291px;
     display: inline-block;
     position:fixed;
@@ -155,12 +155,11 @@ body{
     position:relative;
     bottom:0;
     color:#e0e0e0;
-    line-height: 20px;
+    line-height: 30px;
     white-space: normal;
     word-break: break-all;
     width:40%;
     float:left;
-    padding:5px 0;
 }
 .property_item{
     position:relative;
