@@ -136,7 +136,7 @@ define(["util"], function(util){
                 e.preventDefault();
                 e.stopPropagation();
                 util.initProperty(_this,"base","propertySetting");
-                util.showProperty("base");
+                util.showProperty(_this,"base","propertySetting");
             });
             up.mousedown(function(e){
                 e.preventDefault();

@@ -199,9 +199,9 @@ define(['iframeConfig'], function(iframeConfig){
         initProperty:function(composer,propertyCode,propertySettingKey){
             var util = this;
             propertyCode = propertyCode||"";
-            var boxid = propertyCode+"PropertyList";
-            var groupid = propertyCode+"PropertyGroupList";
-            var containerid = propertyCode+"PropertyBox";
+            var boxid = propertyCode+"PropertyList"+composer.id;
+            var groupid = propertyCode+"PropertyGroupList"+composer.id;
+            var containerid = propertyCode+"PropertyBox"+composer.id;
             var box = $("#"+boxid);
             var groupListBox = $("#"+groupid);
             var propertyContainerBox = $("#"+containerid);
@@ -216,6 +216,7 @@ define(['iframeConfig'], function(iframeConfig){
                 box.append(groupListBox).append(propertyContainerBox);
                 box.appendTo($("body"));
             }
+            box.data("composer",composer);
 
             var _this = composer;
 
@@ -253,7 +254,7 @@ define(['iframeConfig'], function(iframeConfig){
                     group.data("setting",propertySetting[i].groupList);
                     group.data("composer",_this);
                     group.click(function(e){
-                        var composer = $(this).data("composer");
+                        var comp = $(this).data("composer");
                         groupListBox.find("li").removeClass("selected");
                         $(this).addClass("selected");
                         var settingData = $(this).data("setting");
@@ -276,9 +277,9 @@ define(['iframeConfig'], function(iframeConfig){
                                 item.append(itemLabel).append(itemEditor);
                                 childGroupList.append(item);
                                 if(list[_j].editor){
-                                    list[_j].editor(itemEditor,list[_j],composer);
+                                    list[_j].editor(itemEditor,list[_j],comp);
                                 }else{
-                                    util.commonEditor(itemEditor,list[_j],composer);
+                                    util.commonEditor(itemEditor,list[_j],comp);
                                 }
                             }
                             childGroupList.append($("<div class='clear'>"));
@@ -293,70 +294,38 @@ define(['iframeConfig'], function(iframeConfig){
             groupListBox.find("li").first().trigger("click");
         },
         updateProperty:function(composer,propertyCode,propertySettingKey){
-            propertyCode = propertyCode||"";
-            var groupid = propertyCode+"PropertyGroupList";
-            var groupListBox = $("#"+groupid);
-            if(groupListBox.get(0)){
-                var _this = composer;
-                var propertySetting = _this[propertySettingKey];
-                var index = groupListBox.find("li").index(groupListBox.find("li.selected"));
-                if(index>=propertySetting.length){
-                    index = 0;
-                }
-                if(propertySetting.length>0 && propertySetting[index]){
-                    var groupList = propertySetting[index].groupList;
-                    groupListBox.find("li:eq("+index+")").data("setting",groupList).trigger("click");
-                }
 
+            propertyCode = propertyCode||"";
+            var boxid = propertyCode+"PropertyList"+composer.id;
+            var groupid = propertyCode+"PropertyGroupList"+composer.id;
+            var groupListBox = $("#"+groupid);
+            var box = $("#"+boxid);
+            $(".propertyList").not("#"+boxid).hide();
+            var _comp = box.data("composer")||{};
+            if(_comp.id && composer.id && _comp.id == composer.id){
+                if(groupListBox.get(0)){
+                    var _this = composer;
+                    var propertySetting = _this[propertySettingKey];
+                    var index = groupListBox.find("li").index(groupListBox.find("li.selected"));
+                    if(index>=propertySetting.length){
+                        index = 0;
+                    }
+                    if(propertySetting.length>0 && propertySetting[index]){
+                        var groupList = propertySetting[index].groupList;
+                        groupListBox.find("li:eq("+index+")").data("setting",groupList).trigger("click");
+                    }
+
+                }
+            }else{
+                this.initProperty(composer,propertyCode,propertySettingKey);
             }
 
         },
-        showProperty:function(propertyCode){
+        showProperty:function(composer,propertyCode,propertySettingKey){
             $(".propertyList").hide();
-            var boxid = propertyCode+"PropertyList";
+            var boxid = propertyCode+"PropertyList"+composer.id;
             var box = $("#"+boxid);
             box.show();
-        },
-        initIframeProperty:function(composer,propertyCode,propertySettingKey){
-            var util = this;
-            propertyCode = propertyCode||"";
-            var boxid = propertyCode+"PropertyList";
-            var groupid = propertyCode+"PropertyGroupList";
-            var containerid = propertyCode+"PropertyBox";
-            var box = $("#"+boxid);
-            if(!box.get(0)){
-                box = $('<div id="'+boxid+'" class="propertyList">');
-                box.css({
-                    display:"none",
-                    'z-index':101
-                });
-                box.appendTo($("body"));
-            }
-            box.html("");
-            var groupListBox = $('<div id="'+groupid+'" class="groupList">');
-            var propertyContainerBox = $('<div id="'+containerid+'" class="groupCenter selected">');
-            box.append(groupListBox).append(propertyContainerBox);
-
-
-            var _this = composer;
-
-            var propertySetting = _this[propertySettingKey];
-
-            groupListBox.html("");
-            for(var i=0;propertySetting&&i<propertySetting.length;i++){
-                var groupName = propertySetting[i].groupName;
-                var groupType = propertySetting[i].groupType;
-                var url = iframeConfig[groupType];
-                var group = $("<li>").html(groupName).data("setting",propertySetting[i]);
-                group.click(function(e){
-                    groupListBox.find("li").removeClass("selected");
-                    $(this).addClass("selected");
-                    propertyContainerBox.load(url);
-                    propertyContainerBox.data("composer",composer);
-                });
-                group.appendTo(groupListBox);
-            }
-            groupListBox.find("li").first().trigger("click");
         }
 
     };

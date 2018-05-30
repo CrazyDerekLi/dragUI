@@ -83,7 +83,7 @@ define(['base','util'], function(base,util){
                 var _this = this;
                 data.click(function(e){
                     util.initProperty(_this,"data","dataPropertySetting");
-                    util.showProperty("data");
+                    util.showProperty(_this,"data","dataPropertySetting");
                 });
                 tools.push(data);
                 return tools;
