@@ -82,6 +82,7 @@ body{
     left:291px;
     right:0;
     overflow: auto;
+    padding:20px;
 }
 #designer{
     background:url('../image/bg.png') repeat repeat;
@@ -422,4 +423,107 @@ body{
     line-height:30px;
     color:#e0e0e0;
     bottom:0;
+}
+.spinner_editor_box{
+    border:none;
+    margin:0;
+    height:30px;
+    padding:0;
+}
+.spinner_type{
+    color:#e0e0e0;
+    width:70px;
+    float:left;
+    line-height: 30px;
+    padding:0;
+    margin:0;
+    border:none;
+    height:30px;
+}
+
+.spinner_type>label{
+    line-height: 24px;
+    cursor: pointer;
+    color:#999;
+    font-size:14px;
+    font-weight:normal;
+    margin:0 0 0 5px;
+}
+.spinner_type>label.selected{
+    color:#e0e0e0;
+}
+.spinner_type>label.selected .far:before{
+    content:"\f192";
+
+}
+.spinner_type>label .far:before{
+    content:"\f111";
+
+}
+.spinner_box{
+    padding:3px 0;
+    width:60px;
+    float:left;
+    border:none;
+}
+.designer_container_obj.designer:hover{
+    border:1px solid #ccc;
+}
+.designer_container_obj{
+    position:relative;
+    border:1px solid rgba(0,0,0,0);
+}
+.designer_container_obj .row>div{
+    padding:0;
+    margin:0;
+}
+.designer_container_obj .row{
+    z-index: 9;
+}
+.designer_container_head{
+    position:absolute;
+    top:0;
+    right:0;
+    width:30px;
+    height:30px;
+    z-index: 10;
+}
+.designer_container_head i{
+    display: inline-block;
+    width:30px;
+    height:30px;
+    line-height: 30px;
+    text-align: center;
+    background: #01132d;
+    color:#fff;
+    margin:0;
+    padding:0;
+    cursor:pointer;
+    opacity: 0.6;
+}
+.designer_container_head i.fa:hover{
+    background:#3f98e3;
+}
+
+.designer_container_obj.selected .designer_container_head.selected>i{
+    display:none;
+}
+.designer_container_obj.selected .designer_container_head.selected .designer_container_tools{
+    display:block;
+}
+.designer_container_obj.selected .designer_container_head{
+    display: block;
+}
+.designer_container_tools{
+    display: none;
+    height:30px;
+}
+
+.designer_container_obj.selected .designer_container_head{
+    width:auto;
+}
+.designer_container_obj .row{
+    position:relative;
+    width:100%;
+    margin:0;
 }

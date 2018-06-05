@@ -83,6 +83,7 @@ body{
     left:291px;
     right:0;
     overflow: auto;
+    padding:10px;
 }
 #designer{
     /*background:url('../image/bg.png') repeat repeat;*/
@@ -423,4 +424,44 @@ body{
     line-height:30px;
     color:#333;
     bottom:0;
+}
+.spinner_editor_box{
+    border:none;
+    margin:0;
+    height:30px;
+    padding:0;
+}
+.spinner_type{
+    color:#333;
+    width:70px;
+    float:left;
+    line-height: 30px;
+    margin:0;
+    border:none;
+    height:30px;
+}
+.spinner_type>label{
+    line-height: 30px;
+    cursor: pointer;
+    color:#ccc;
+    font-size:14px;
+    font-weight:normal;
+    margin:0 0 0 5px;
+}
+.spinner_type>label.selected{
+    color:#808080;
+}
+.spinner_type>label.selected .far:before{
+    content:"\f192";
+
+}
+.spinner_type>label .far:before{
+    content:"\f111";
+
+}
+.spinner_box{
+    padding:3px 0;
+    width:60px;
+    float:left;
+    border:none;
 }

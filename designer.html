@@ -69,9 +69,10 @@
                 save:function(jsonStr){
                     console.log(jsonStr);
                     alert("我的保存成功");
-                },
-                designerType:"absolute",
-                theme:"dark"//dark or white，
+                }
+                //,designerType:"absolute"
+                ,designerType:"relative"
+                ,theme:"dark"//dark or white，
             });
             composerMap.show(
             //     {
@@ -89,22 +90,24 @@
         <li bindShow="bodySettingBox" id="body_setting">设置</li>
     </ul>
     <div id="bodySettingBox" class="groupCenter">
-        <div class="property_list">
+        <div id="bodySettingList" class="property_list">
             <div class="property_item">
                 <div class="property_label">
                     <div class="property_label_title">
                         页面宽度：
                     </div>
                 </div>
-                <div class="property_info"><input type="text" id="bodyWidth"/></div>
-            </div>
-            <div class="property_item">
-                <div class="property_label">
-                    <div class="property_label_title">
-                        页面高度：
+                <div class="property_info">
+                    <div class="spinner_editor_box">
+                        <div class="spinner_box">
+                            <input type="text" id="bodyWidth" style="width:60px;"/>
+                        </div>
+                        <div class="spinner_type">
+                            <label class="selected"><i class="far"></i>px</label>
+                            <label><i class="far"></i>%</label>
+                        </div>
                     </div>
                 </div>
-                <div class="property_info"><input type="text" id="bodyHeight"/></div>
             </div>
             <div class="property_item">
                 <div class="property_label">
@@ -127,13 +130,15 @@
     <div class="designer_btn" id="designer_save"><i class="fa fa-save"></i>保存</div>
     <div class="designer_btn" id="designer_lock" lock="0"><i class="fa fa-lock"></i>锁定</div>
     <div class="designer_btn" id="designer_view"><i class="fa fa-eye"></i>预览</div>
-    <div class="designer_btn" id="designer_delete"><i class="fa fa-trash-alt"></i>删除</div>
+    <!--<div class="designer_btn" id="designer_delete"><i class="fa fa-trash-alt"></i>删除</div>-->
 </div>
 <div id="designerBox">
     <div id="designerBg">
     </div>
     <div id="designerContainer">
-        <div id="designer" style="width:1920px;height:1080px;"></div>
+        <div id="designer" style="width:1920px;height:1080px;">
+
+        </div>
     </div>
 </div>
 <div id="designerView">

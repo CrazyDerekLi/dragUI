@@ -4,6 +4,7 @@ define(["util"], function(util){
 
     var base = {
         designer:true,
+        designerType:"absolute",
         box:'',
         drag:undefined,
         composer:undefined,
@@ -19,6 +20,7 @@ define(["util"], function(util){
             w:100,							//		宽度
             h:20,							//		高度
             index:1,						//		布局位置（层级/顺序）
+            columnid:'',
             layoutid:''						//		容器id
         },
         property:{							//		属性参数
@@ -31,21 +33,27 @@ define(["util"], function(util){
             if(typeof o1 === "object" && o1 instanceof Array){
                 o2 = o2||[];
                 for(var i=0;i<o1.length;i++){
-                     var _o11 = o1[i];
-                     var _o21 = o2[i];
-                     o2[i] = o2[i];
-                     if(!_o21){
-                         if(typeof o1 === "object" && o1 instanceof Array){
-                             _o21 = _o21||[];
-                         }else if(typeof o1 === "object" && o1 instanceof jQuery){
-                             _o21 = _o21||"";
-                         }else if(typeof _o11 === "object" && !(_o11 instanceof Array) && !(o1 instanceof jQuery)){
-                             _o21 = _o21||{};
-                         }else if(typeof o1 === "string"||typeof o1 === "boolean"||typeof o1 === "number"){
-                             _o21 = _o21||"";
-                         }
-                     }
-                     this._copyObj(o1[i],o2[i]);
+                    var _o11 = o1[i];
+                    var _o21 = o2[i];
+                    o2[i] = o2[i];
+                    if(!_o21){
+                        if(typeof _o11 === "object" && _o11 instanceof Array){
+                            _o21 = _o21||[];
+                        }else if(typeof _o11 === "object" && _o11 instanceof jQuery){
+                            _o21 = _o21||"";
+                        }else if(typeof _o11 === "object" && !(_o11 instanceof Array) && !(_o11 instanceof jQuery)){
+                            _o21 = _o21||{};
+                        }else if(typeof _o11 === "string"||typeof _o11 === "boolean"||typeof _o11 === "number"){
+                            _o21 = _o21||"";
+                        }
+                    }
+                    if(typeof _o11 === "string"||typeof _o11 === "boolean"||typeof _o11 === "number" || _o11 === null){
+                        o2[i] = _o11||_o21;
+                    }else{
+                        this._copyObj(_o11,_o21);
+                        o2[i] = _o11||_o21;
+                    }
+
                 }
             }else if(typeof o1 === "object" && o1 instanceof jQuery){
                 o2 = o1;
@@ -53,7 +61,7 @@ define(["util"], function(util){
                 o2 = o2||{};
                 for(var key in o1){
                     var o = o1[key];
-                    if(typeof o === "string"||typeof o === "boolean"||typeof o === "number"){
+                    if(typeof o === "string"||typeof o === "boolean"||typeof o === "number" || o === null){
                         o2[key] = o;
                     }else if(typeof o === "object"){
                         if(o instanceof Array){
@@ -66,7 +74,7 @@ define(["util"], function(util){
                         this._copyObj(o1[key],o2[key]);
                     }
                 }
-            }else if(typeof o1 === "string"||typeof o1 === "boolean"||typeof o1 === "number"){
+            }else if(typeof o1 === "string"||typeof o1 === "boolean"||typeof o1 === "number"|| o === null){
                 o2 = o1;
             }
 
@@ -94,19 +102,29 @@ define(["util"], function(util){
         _createDrag:function(){
             this._destroyDrag();
             this.drag = $("<div>");
-            var l = this.layout.l;
-            var t = this.layout.t;
-            l = parseInt(l);
-            t = parseInt(t);
+            if(CM.designerType == "absolute"){
+                var l = this.layout.l;
+                var t = this.layout.t;
+                l = parseInt(l);
+                t = parseInt(t);
 
-            this.drag.css({
-                position:"absolute",
-                width:this.layout.w,
-                height:this.layout.h,
-                left:l,
-                top:t,
-                "z-index":this.layout.index
-            });
+                this.drag.css({
+                    position:"absolute",
+                    width:this.layout.w,
+                    height:this.layout.h,
+                    left:l,
+                    top:t,
+                    "z-index":this.layout.index
+                });
+            }else{
+                this.drag.css({
+                    position:"relative",
+                    width:this.layout.w,
+                    height:this.layout.h,
+                    "z-index":this.layout.index
+                });
+            }
+
 
             this.box.append(this.drag);
             this.composer = this._createComposer();
@@ -160,9 +178,43 @@ define(["util"], function(util){
                 e.stopPropagation();
                 _this.destroy();
             });
+            if(this.designerType == "relative"){
+                var move = $("<i class='fa fa-arrows-alt' title='移动'>");
+
+                move.data("composer",_this);
+                move.mousedown(function(e){
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var composer = $(this).data("composer");
+                    var clone = $(this).clone();
+
+                    clone.css({
+                        width:"30px",
+                        height:"30px",
+                        "line-height":"30px",
+                        "text-align":"center",
+                        "background":"#01132d",
+                        "opacity":"0.5",
+                        color:"#fff",
+                        position:"absolute",
+                        "z-index":"100000",
+                        left:e.pageX-CM.designer.offset().left+CM.designer.position().left,
+                        top:e.pageY-CM.designer.offset().top+CM.designer.position().top
+                    });
+                    clone.data("composer",composer);
+                    clone.appendTo(CM.designer);
+
+                    CM.cloneObj = clone;
+                    CM.relativeMoveStart = true;
+                });
+                tools.splice(0,0,move);
+            }
+
             tools.push(setting);
-            tools.push(up);
-            tools.push(down);
+            if(this.designerType == "absolute"){
+                tools.push(up);
+                tools.push(down);
+            }
             tools.push(del);
             return tools;
         },
@@ -189,38 +241,46 @@ define(["util"], function(util){
                 $(this).addClass("selected");
                 CM.current = _this;
             });
-            this.drag.draggable({
-                handle: ".drag_msk",
-                snap: ".designer_drag_obj",
-                snapMode: "outer",
-                containment: "#designer",
-                scroll: false,
-                start: function(e,ui) {
-                    ui.helper.addClass("start_move");
-                    ui.helper.css({
-                        opacity:0.5
-                    });
-                },
-                drag: function(e,ui) {
+            if(CM.designerType == "absolute"){
+                this.drag.draggable({
+                    handle: ".drag_msk",
+                    snap: ".designer_drag_obj",
+                    snapMode: "outer",
+                    containment: "#designer",
+                    scroll: false,
+                    start: function(e,ui) {
+                        ui.helper.addClass("start_move");
+                        ui.helper.css({
+                            opacity:0.5
+                        });
+                    },
+                    drag: function(e,ui) {
 
-                },
-                stop: function(e,ui) {
-                    ui.helper.removeClass("start_move");
-                    ui.helper.css({
-                        opacity:1
-                    });
-                    var position = ui.position;
-                    _this.layout.l = position.left;
-                    _this.layout.t = position.top;
-                    util.updateProperty(_this,"base","propertySetting");
-                    _this.afterDrag();
-                }
-            });
+                    },
+                    stop: function(e,ui) {
+                        ui.helper.removeClass("start_move");
+                        ui.helper.css({
+                            opacity:1
+                        });
+                        var position = ui.position;
+                        _this.layout.l = position.left;
+                        _this.layout.t = position.top;
+                        util.updateProperty(_this,"base","propertySetting");
+                        _this.afterDrag();
+                    }
+                });
+            }
+
             if(CM.lock){
                 this.drag.draggable( "option", "revert", true );
             }
+            var containerId = "designer";
+            if(this.layout.columnid){
+                containerId = this.layout.columnid;
+            }
             this.drag.resizable({
                 containment: "#designer",
+                delay: 150,
                 resize:function(event,ui){
                     _this.layout.w = ui.size.width;
                     _this.layout.h = ui.size.height;
@@ -264,6 +324,7 @@ define(["util"], function(util){
         getSettings:function(){
             var o = {
                 id:this.id,
+                designerType:this.designerType,
                 classname:this.classname,
                 layout:this.layout,
                 property:this.property
