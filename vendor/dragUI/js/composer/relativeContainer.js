@@ -94,7 +94,7 @@ define(["util"], function(util){
                     console.log(this.designer);
                     if(this.designer){
                         column.css({
-                            border:"1px dotted #ccc",
+                            border:"1px dotted #aaa",
                             "min-height": "30px"
                         });
                     }
