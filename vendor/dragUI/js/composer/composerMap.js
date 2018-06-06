@@ -611,8 +611,8 @@
                     if(_this.relativeMoveStart && _this.cloneObj){
                         _this.cloneObj.css({
                             position:"absolute",
-                            left:e.pageX-_this.designer.offset().left+_this.designer.position().left+5,
-                            top:e.pageY-_this.designer.offset().top+_this.designer.position().top+5
+                            left:e.pageX-_this.designer.offset().left+25,
+                            top:e.pageY-_this.designer.offset().top+25
                         });
                     }else if(_this.cloneObj){
                         _this.cloneObj.remove();

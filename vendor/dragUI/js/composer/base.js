@@ -187,7 +187,7 @@ define(["util"], function(util){
                     e.stopPropagation();
                     var composer = $(this).data("composer");
                     var clone = $(this).clone();
-
+                    console.log(CM.designer);
                     clone.css({
                         width:"30px",
                         height:"30px",
@@ -198,8 +198,8 @@ define(["util"], function(util){
                         color:"#fff",
                         position:"absolute",
                         "z-index":"100000",
-                        left:e.pageX-CM.designer.offset().left+CM.designer.position().left,
-                        top:e.pageY-CM.designer.offset().top+CM.designer.position().top
+                        left:e.pageX-CM.designer.offset().left+25,
+                        top:e.pageY-CM.designer.offset().top+25
                     });
                     clone.data("composer",composer);
                     clone.appendTo(CM.designer);
