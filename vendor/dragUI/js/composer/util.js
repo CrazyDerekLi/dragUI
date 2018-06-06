@@ -81,20 +81,34 @@ define(['iframeConfig'], function(iframeConfig){
                     _this.editorChangeData(setting,composer,$(this).val());
                 });
             }else if(setting.type == "spinner"){
-                editor = $("<input type='text'>").val(val);
-                box.html(editor);
-                var options = setting.options||{};
-                options.min = options.min || 0;
-                options.start = function(event, ui){
-                    _this.editorChangeData(setting,composer,$(this).val());
-                };
-                options.stop = function(event, ui){
-                    _this.editorChangeData(setting,composer,$(this).val());
-                };
-                options.change = function(event, ui){
-                    _this.editorChangeData(setting,composer,$(this).val());
-                };
-                editor.spinner(options);
+                if(composer.designerType == "relative"
+                    && setting.field.length==2
+                    && setting.field[0]=="layout"){
+                    if(setting.field[1] == "h"){
+                        editor = $("<input type='text'>").val(val);
+                        box.html(editor);
+                        editor.change(function(){
+                            _this.editorChangeData(setting,composer,$(this).val());
+                            console.log($(this).val());
+                        });
+                    }
+                }else{
+                    editor = $("<input type='text'>").val(val);
+                    box.html(editor);
+                    var options = setting.options||{};
+                    options.min = options.min || 0;
+                    options.start = function(event, ui){
+                        _this.editorChangeData(setting,composer,$(this).val());
+                    };
+                    options.stop = function(event, ui){
+                        _this.editorChangeData(setting,composer,$(this).val());
+                    };
+                    options.change = function(event, ui){
+                        _this.editorChangeData(setting,composer,$(this).val());
+                    };
+                    editor.spinner(options);
+                }
+
             }else if(setting.type == "checkbox"){
                 editor = $("<input type='checkbox'>").val(val);
                 if(val == "1"){
@@ -165,10 +179,14 @@ define(['iframeConfig'], function(iframeConfig){
                         _this.editorChangeData(setting,composer,_formatter(ui.value,options));
                     }
                 });
-
-
             }
-
+            if(composer.designerType == "relative"
+                && setting.field.length==2
+                && setting.field[0]=="layout"
+                && (setting.field[1] == "l"||setting.field[1] == "t"||setting.field[1] == "index"||setting.field[1] == "w")){
+                return false;
+            }
+            return true;
         },
         getComposerValue:function(list,o){
             if(list.length>0){
@@ -192,7 +210,15 @@ define(['iframeConfig'], function(iframeConfig){
             }
         },
         editorChangeData:function(setting,composer,value){
-            this.setComposerValue(setting.field,composer,value,setting.type);
+            if(composer.designerType == "relative"
+                && setting.field.length==2
+                && setting.field[0]=="layout"
+                && setting.field[1] == "h"){
+                this.setComposerValue(setting.field,composer,value,"text");
+            }else{
+                this.setComposerValue(setting.field,composer,value,setting.type);
+            }
+
             composer._syncUI();
             composer.chooseMe();
         },
@@ -279,7 +305,10 @@ define(['iframeConfig'], function(iframeConfig){
                                 if(list[_j].editor){
                                     list[_j].editor(itemEditor,list[_j],comp);
                                 }else{
-                                    util.commonEditor(itemEditor,list[_j],comp);
+                                    var flag = util.commonEditor(itemEditor,list[_j],comp);
+                                    if(!flag){
+                                        item.hide();
+                                    }
                                 }
                             }
                             childGroupList.append($("<div class='clear'>"));

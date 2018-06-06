@@ -119,9 +119,8 @@ define(["util"], function(util){
             }else{
                 this.drag.css({
                     position:"relative",
-                    width:this.layout.w,
-                    height:this.layout.h,
-                    "z-index":this.layout.index
+                    width:"100%",
+                    height:this.layout.h
                 });
             }
 
@@ -278,7 +277,7 @@ define(["util"], function(util){
             if(this.layout.columnid){
                 containerId = this.layout.columnid;
             }
-            this.drag.resizable({
+            var resizeOption = {
                 containment: "#designer",
                 delay: 150,
                 resize:function(event,ui){
@@ -289,7 +288,12 @@ define(["util"], function(util){
                     util.updateProperty(_this,"base","propertySetting");
                     _this.afterResize(_this.composer);
                 }
-            });
+            };
+            if(this.designerType == "relative"){
+                resizeOption.handles="s";
+            }
+
+            this.drag.resizable(resizeOption);
             this.drag.attr("id",this.id);
 
         },
