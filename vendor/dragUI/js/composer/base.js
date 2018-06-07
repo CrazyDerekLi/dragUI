@@ -186,7 +186,6 @@ define(["util"], function(util){
                     e.stopPropagation();
                     var composer = $(this).data("composer");
                     var clone = $(this).clone();
-                    console.log(CM.designer);
                     clone.css({
                         width:"30px",
                         height:"30px",
@@ -236,9 +235,8 @@ define(["util"], function(util){
             this.drag.append(this.dragHead);
             this.dragHead.append(this.dragTools);
             this.drag.click(function(e){
-                CM.designer.find(".designer_drag_obj").removeClass("selected");
-                $(this).addClass("selected");
-                CM.current = _this;
+                var id = _this.id;
+                CM.select(id);
             });
             if(CM.designerType == "absolute"){
                 this.drag.draggable({
@@ -295,7 +293,7 @@ define(["util"], function(util){
 
             this.drag.resizable(resizeOption);
             this.drag.attr("id",this.id);
-
+            this.afterResize(this.composer);
         },
         _getOptions:function(){
             return this;
@@ -360,9 +358,8 @@ define(["util"], function(util){
             }
         },
         chooseMe:function(){
-            this.box.find(".designer_drag_obj").removeClass("selected");
-            this.drag.addClass("selected");
-            CM.current = this;
+            var id = this.id;
+            CM.select(id);
         }
     };
     return base;

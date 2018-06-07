@@ -283,6 +283,9 @@ body{
 .designer_drag_obj.selected{
     box-shadow: 0 0 20px red;
 }
+.designer_drag_obj.selected.child{
+    box-shadow: 0 0 20px green;
+}
 .designer_drag_obj.selected>.designer_drag_head{
     display: block;
 }
@@ -347,6 +350,15 @@ body{
     right:0;
     z-index: 1000;
     display: none;
+    overflow: hidden;
+}
+#designerViewBox{
+    position:absolute;
+    left:0;
+    top:0;
+    bottom:0;
+    right:0;
+    z-index: 2;
     overflow: auto;
 }
 #designerViewContainer{
@@ -356,9 +368,9 @@ body{
     box-shadow: 0 0 10px #ccc;
 }
 #designerCloseBtn{
-    position:absolute;
+    position:fixed;
     top:0;
-    right:0;
+    right:20px;
     z-index:3;
     width:40px;
     height:40px;

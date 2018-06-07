@@ -4,25 +4,24 @@
     var realtiveGroup = {
         groupName:"布局",groupList:[{
             groupName:"布局组件",composerList:[
-                {type:"relativeContainer",title:"6:6",icon:vendorPath+"dragUI/image/6-6.png",options:{property:{columns:["6","6"]}}}
-                ,{type:"relativeContainer",title:"4:8",icon:vendorPath+"dragUI/image/4-8.png",options:{property:{columns:["4","8"]}}}
-                ,{type:"relativeContainer",title:"8:4",icon:vendorPath+"dragUI/image/8-4.png",options:{property:{columns:["8","4"]}}}
-                ,{type:"relativeContainer",title:"4:4:4",icon:vendorPath+"dragUI/image/4-4-4.png",options:{property:{columns:["4","4","4"]}}}
-                ,{type:"relativeContainer",title:"5:5:2",icon:vendorPath+"dragUI/image/5-5-2.png",options:{property:{columns:["5","5","2"]}}}
-                ,{type:"relativeContainer",title:"5:2:5",icon:vendorPath+"dragUI/image/5-2-5.png",options:{property:{columns:["5","2","5"]}}}
-                ,{type:"relativeContainer",title:"2:5:5",icon:vendorPath+"dragUI/image/2-5-5.png",options:{property:{columns:["2","5","5"]}}}
-                ,{type:"relativeContainer",title:"3:3:6",icon:vendorPath+"dragUI/image/3-3-6.png",options:{property:{columns:["3","3","6"]}}}
-                ,{type:"relativeContainer",title:"3:6:3",icon:vendorPath+"dragUI/image/3-6-3.png",options:{property:{columns:["3","6","3"]}}}
-                ,{type:"relativeContainer",title:"6:3:3",icon:vendorPath+"dragUI/image/6-3-3.png",options:{property:{columns:["6","3","3"]}}}
-                ,{type:"relativeContainer",title:"3:3:3:3",icon:vendorPath+"dragUI/image/3-3-3-3.png",options:{property:{columns:["3","3","3","3"]}}}
-                ,{type:"relativeContainer",title:"2:2:2:2:2:2",icon:vendorPath+"dragUI/image/2-2-2-2-2-2.png",options:{property:{columns:["2","2","2","2","2","2"]}}}
+                {type:"relativeContainer",title:"6:6",icon:vendorPath+"dragUI/image/6-6.png",options:{property:{columnsSetting:"6:6"}}}
+                ,{type:"relativeContainer",title:"4:8",icon:vendorPath+"dragUI/image/4-8.png",options:{property:{columnsSetting:"4:8"}}}
+                ,{type:"relativeContainer",title:"8:4",icon:vendorPath+"dragUI/image/8-4.png",options:{property:{columnsSetting:"8:4"}}}
+                ,{type:"relativeContainer",title:"4:4:4",icon:vendorPath+"dragUI/image/4-4-4.png",options:{property:{columnsSetting:"4:4:4"}}}
+                ,{type:"relativeContainer",title:"5:5:2",icon:vendorPath+"dragUI/image/5-5-2.png",options:{property:{columnsSetting:"5:5:2"}}}
+                ,{type:"relativeContainer",title:"5:2:5",icon:vendorPath+"dragUI/image/5-2-5.png",options:{property:{columnsSetting:"5:2:5"}}}
+                ,{type:"relativeContainer",title:"2:5:5",icon:vendorPath+"dragUI/image/2-5-5.png",options:{property:{columnsSetting:"2：5：5"}}}
+                ,{type:"relativeContainer",title:"3:3:6",icon:vendorPath+"dragUI/image/3-3-6.png",options:{property:{columnsSetting:"3：3：6"}}}
+                ,{type:"relativeContainer",title:"3:6:3",icon:vendorPath+"dragUI/image/3-6-3.png",options:{property:{columnsSetting:"3：6：3"}}}
+                ,{type:"relativeContainer",title:"6:3:3",icon:vendorPath+"dragUI/image/6-3-3.png",options:{property:{columnsSetting:"6:3:3"}}}
+                ,{type:"relativeContainer",title:"3:3:3:3",icon:vendorPath+"dragUI/image/3-3-3-3.png",options:{property:{columnsSetting:"3:3:3:3"}}}
+                ,{type:"relativeContainer",title:"2:2:2:2:2:2",icon:vendorPath+"dragUI/image/2-2-2-2-2-2.png",options:{property:{columnsSetting:"2:2:2:2:2:2"}}}
             ]
         }]
     };
     for(var key in composerConfig){
         dep.push(key);
     }
-    console.log(dep);
     require.config({
         paths:composerConfig
     });
@@ -33,10 +32,13 @@
                 func:arguments[i]
             }
         }
-        console.log(composerType);
         var composerMap = {
             allComposer:composerType,
+            realtiveGroup:realtiveGroup,
+            controlPress:false,
+            selectedList:{},
             groupList:[],
+            containerList:[],
             all:{},
             lock:false,
             current:null,
@@ -65,6 +67,38 @@
             },
             save:function(){
                 alert("保存成功");
+            },
+            get:function(id){
+                return this.all[id];
+            },
+            select:function(id){
+
+                if (!this.controlPress){
+                    this.selectedList = {};
+                }
+                if(this.all[id]){
+                    this.selectedList[id] = this.get(id);
+                    if(!this.current||!this.controlPress){
+                        this.current = this.get(id);
+                    }
+                }else{
+                    this.current = null;
+                }
+                var all = this.all;
+                var _this = this;
+                for(var key in all){
+                    var obj = $("#"+key);
+                    if(_this.selectedList[key]){
+                        obj.addClass("selected");
+                        obj.addClass("child");
+                    }else{
+                        obj.removeClass("selected");
+                    }
+                    if(_this.current&&key == _this.current.id){
+                        obj.addClass("selected");
+                        obj.removeClass("child");
+                    }
+                }
             },
             changeTheme:function(theme){
 
@@ -102,7 +136,6 @@
 
                 this.designer.addClass(this.bodySetting.className);
                 //this.designer.html("");
-                console.log(this.designerType);
                 if(this.designerType == "relative"){
                     this.bindRelativeEvent();
                     this.initRelativeBodySetting();
@@ -120,7 +153,8 @@
                         && !$(e.target).parents(".propertyList").get(0)
                         && !$(e.target).parents(".designer_drag_tools").get(0)
                     ){
-                        _this.designer.find(".designer_drag_obj").removeClass("selected");
+                        _this.select("");
+                        //_this.designer.find(".designer_drag_obj").removeClass("selected");
                         _this.current = null;
                     }
                 });
@@ -142,6 +176,7 @@
                         && !$(e.target).parents(".colorpicker").get(0)
                         && !$(e.target).parents(".propertyList").get(0)
                         && !$(e.target).parents(".designer_drag_tools").get(0)
+                        && !$(e.target).parents(".designer_container_head").get(0)
                     ){
                         if($(".propertyList").get(0)){
                             $(".propertyList").hide();
@@ -237,7 +272,6 @@
                             columnComposers[options.layout.columnid] = columnComposers[options.layout.columnid]||[];
                             columnComposers[options.layout.columnid].push(id);
                         }
-
                         _this.all[id] = composer;
                         _this.clone.remove();
                         delete _this.clone;
@@ -280,6 +314,161 @@
                     height:this.bodySetting.height
                 });
                 var _this = this;
+                var Rect = {
+                    obj:null,
+                    container:null,
+                    init:function(box){
+                        Rect.container = box;
+                        if(Rect.container&&Rect.container.get(0)){
+                            if(!Rect.obj){
+                                Rect.obj = $("<div>");
+                            }
+                            var o = Rect.obj;
+
+                            o.addClass("select-box");
+                            o.css({
+                                "background":"red",
+                                "position":"absolute",
+                                "opacity":0.3
+                            });
+
+                            o.height(0);
+                            o.width(0);
+                            Rect.container.append(o);
+
+                            Rect.container.mousedown(Rect.start);
+                            Rect.container.mousemove(Rect.move);
+                            Rect.container.mouseup(Rect.end);
+                        }
+                    },
+                    start:function(e){
+                        if($(e.target).hasClass("designer_drag_obj")||$(e.target).parents(".designer_drag_obj").get(0)){
+                            return;
+                        }
+
+                        var o = Rect.obj;
+
+                        var left = e.pageX-Rect.container.offset().left+20;
+                        var top = e.pageY-Rect.container.offset().top+20;
+                        o.css("left", left);
+                        o.attr("startX",left);
+                        o.data("mouseBeginX",left);
+                        o.css("top", top);
+                        o.attr("startY",top);
+                        o.data("mouseBeginY",top);
+                        o.height(0);
+                        o.width(0);
+                        Rect.status = true;
+                        Rect.obj.show();
+
+
+                    },
+                    move:function(e){
+                        e.preventDefault();
+                        var o = Rect.obj;
+                        if(o&&Rect.status){
+                            var dx = e.pageX-Rect.container.offset().left+20 - o.data("mouseBeginX");
+                            var dy = e.pageY-Rect.container.offset().top+20 - o.data("mouseBeginY");
+                            if(dx<0){
+                                o.css("left" , parseFloat(o.attr("startX"))+dx );
+                            }else{
+                                o.css("left" , o.attr("startX"));
+                            }
+                            if(dy<0){
+                                o.css("top" , parseFloat(o.attr("startY"))+dy);
+                            }else{
+                                o.css("top" , o.attr("startY"));
+                            }
+
+                            o.height (Math.abs(dy));
+                            o.width (Math.abs(dx));
+                        }
+
+                    },
+                    end:function(e){
+                        if(Rect.status) {
+                            var all = _this.all;
+                            _this.controlPress = true;
+                            for (var key in all) {
+                                if (Rect.checkInclude(all[key].drag)) {
+                                    _this.select(key);
+                                }
+                            }
+                            _this.controlPress = false;
+
+                            if (Rect.obj) {
+                                Rect.obj.hide();
+                            }
+                            Rect.status = false;
+                        }
+
+
+                    },
+                    checkInclude:function(obj){
+                        var startX = Rect.obj.position().left;
+                        var startY = Rect.obj.position().top;
+                        var endX = Rect.obj.width() + startX;
+                        var endY = Rect.obj.height() + startY;
+                        var cStartX = obj.position().left;
+                        var cStartY = obj.position().top;
+                        var cEndX = obj.width() + cStartX;
+                        var cEndY = obj.height() + cStartY;
+                        return startX<=cStartX && startY<=cStartY && endX>=cEndX && endY>=cEndY;
+                    }
+                };
+
+
+                Rect.init(this.designer);
+
+                $(window).keydown(function(e){
+                    //e.preventDefault();
+                    var step = 5;
+                    if(e.keyCode=="37"||e.keyCode=="100"){
+                        var position = "left";
+                        var current = _this.current;
+                        if(current){
+                            current.layout.l = current.layout.l-step;
+                            current._syncUI();
+                            current.chooseMe();
+                        }
+                    }
+                    if(e.keyCode=="38"||e.keyCode=="104"){
+                        var position = "top";
+                        var current = _this.current;
+                        if(current){
+                            current.layout.t = current.layout.t-step;
+                            current._syncUI();
+                            current.chooseMe();
+                        }
+                    }
+                    if(e.keyCode=="39"||e.keyCode=="112"){
+                        var position = "right";
+                        var current = _this.current;
+                        if(current){
+                            current.layout.l = current.layout.l+step;
+                            current._syncUI();
+                            current.chooseMe();
+                        }
+                    }
+                    if(e.keyCode=="40"||e.keyCode=="98"){
+                        var position = "bottom";
+                        var current = _this.current;
+                        if(current){
+                            current.layout.t = current.layout.t+step;
+                            current._syncUI();
+                            current.chooseMe();
+                        }
+                    }
+                    console.log(e.keyCode);
+                    if(e.keyCode=="17"){
+                        _this.controlPress = true;
+                    }
+                });
+                $(window).keyup(function(e){
+                    if(e.keyCode=="17"){
+                        _this.controlPress = false;
+                    }
+                });
                 this.designer.mouseup(function(e){
                     if(_this.clone){
                         var left = e.pageX;
@@ -652,6 +841,7 @@
                 }
                 this.designerType = data.designerType||this.designerType;
                 this.bodySetting = data.bodySetting||this.bodySetting;
+                this.containerList = data.containerList||this.containerList;
                 $('#bodyBg').spectrum("set", this.bodySetting.bgColor);//设置选择器当前颜色
                 _box.css({
                     width:this.bodySetting.width,
@@ -659,16 +849,24 @@
                     background:this.bodySetting.bgColor
                 });
                 if(this.designerType == "relative"){
+                    var configSetting = {};
                     for(var i=0;data&&data.composerList&&i<data.composerList.length;i++){
                         var composerConfig = data.composerList[i];
                         composerConfig.box = _box;
                         composerConfig.designer = true;
                         var _composerType = composerConfig.classname;
                         if(_composerType == "relativeContainer"){
-                            var composer = new composerType[_composerType].func(composerConfig);
-                            var id = composer.id;
-                            this.all[id] = composer;
+                            var id = composerConfig.id;
+                            configSetting[id] = composerConfig
                         }
+                    }
+                    for(var i=0;data&&data.containerList&&i<data.containerList.length;i++){
+                        var containerId = data.containerList[i];
+                        var _o = configSetting[containerId];
+                        var _composerType = _o.classname;
+                        var composer = new composerType[_composerType].func(_o);
+                        var id = composer.id;
+                        this.all[id] = composer;
                     }
                 }
                 for(var i=0;data&&data.composerList&&i<data.composerList.length;i++){
@@ -830,6 +1028,7 @@
                 }
                 data.bodySetting = this.bodySetting;
                 data.designerType = this.designerType;
+                data.containerList = this.containerList;
                 var jsonStr = JSON.stringify(data);
                 window.localStorage.setItem("designerData",jsonStr);
                 return jsonStr;

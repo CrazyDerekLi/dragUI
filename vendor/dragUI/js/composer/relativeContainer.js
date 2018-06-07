@@ -12,12 +12,22 @@ define(["util"], function(util){
             id:"",
             box:null,
             container:null,
+            propertySetting:[
+                {
+                    groupName:"列",groupList:[
+                        {
+                            childGroupName:"列配置",
+                            childGroupList:[
+                                {value:"",type:"text",field:["property","columnsSetting"],title:"列布局配置"},
+                            ]
+                        }
+                    ]
+                }
+            ],
             property:{
                 columnComposers:{},
                 rowIndex:0,
-                columns:[
-                    "12"
-                ]
+                columnsSetting:"12"
             },
             _copyObj:function(o1,o2){
                 if(typeof o1 === "object" && o1 instanceof Array){
@@ -80,18 +90,26 @@ define(["util"], function(util){
                     this.id = "id"+new Date().getTime();
                 }
                 this._createContainer();
+                var id = this.id;
+                CM.containerList = CM.containerList||[];
+                CM.containerList.push(id);
                 return this;
             },
             _createContainer:function(){
-                this.container = $("<div class='designer_container_obj'>");
+
+                if(!this.container||!this.container.get()){
+                    this.container = $("<div class='designer_container_obj'>");
+                }
                 if(this.designer){
                     this.container.addClass("designer");
                 }
                 var row = $("<div class='row'>");
-                for(var i=0;i<this.property.columns.length;i++){
-                    var column = $('<div>').addClass("col-xs-"+this.property.columns[i]);
+                this.property.columnsSetting = this.property.columnsSetting||"12";
+                this.columns = this.property.columnsSetting.split(":");
+
+                for(var i=0;i<this.columns.length;i++){
+                    var column = $('<div>').addClass("col-xs-"+this.columns[i]);
                     column.addClass("container_column");
-                    console.log(this.designer);
                     if(this.designer){
                         column.css({
                             border:"1px dotted #aaa",
@@ -103,6 +121,9 @@ define(["util"], function(util){
                     this.property.columnComposers[this.id+"_"+i] = this.property.columnComposers[this.id+"_"+i]||[];
                     row.append(column);
                 }
+
+
+
                 this.container.html("");
                 this.container.append(row);
 
@@ -111,6 +132,55 @@ define(["util"], function(util){
                     this._bindContainerEvent();
                 }
             },
+            setComposer:function(){
+                for(var key in this.property.columnComposers){
+                    var arr = this.property.columnComposers[key]||[];
+                    for(var i=0;i<arr.length;i++){
+                        var id = arr[i];
+                        var composer = CM.all[id];
+                        var options = composer.getSettings();
+                        var columnid = options.layout.columnid;
+                        var _b = CM.designer.find("#"+columnid);
+                        options.box = _b;
+                        options.designer = true;
+                        // composer.drag.appendTo($("#"+key));
+                        var _c = new CM.allComposer[composer.classname].func(options);
+                        var id = _c.id;
+                        CM.all[id] = _c;
+
+                    }
+                }
+            },
+            initAllColumns:function(){
+
+                var arr = [];
+                for(var key in this.property.columnComposers){
+                    var _i = key.split("_");
+                    var i = this.columns.length-1;
+                    if(i<parseInt(_i[1])){
+                        arr.push(key);
+                    }
+                }
+                var newArr = [];
+                for(var m=0;m<arr.length;m++){
+                    var key = arr[m];
+                    var composerList = this.property.columnComposers[key];
+                    newArr = newArr.concat(composerList);
+                }
+                for(var i=0;i<arr.length;i++){
+                    var key = arr[i];
+                    delete this.property.columnComposers[key];
+                }
+                for(var i=0;i<newArr.length;i++){
+                    var id = newArr[i];
+                    var composer = CM.all[id];
+                    composer.layout.layoutid = this.id;
+                    composer.layout.columnid = this.id+"_"+(this.columns.length-1);
+                }
+                var lastColumns = this.property.columnComposers[this.id+"_"+(this.columns.length-1)];
+                this.property.columnComposers[this.id+"_"+(this.columns.length-1)] = lastColumns.concat(newArr);
+
+            },
             _getTools:function(){
                 var tools = this.getTools()||[];
                 var setting = $("<i class='fa fa-cog' title='配置'>");
@@ -118,38 +188,54 @@ define(["util"], function(util){
                 var down = $("<i class='fa fa-arrow-alt-circle-down' title='下移'>");
                 var del = $("<i class='fa fa-trash-alt' title='删除'>");
                 var _this = this;
-
+                setting.data("container",this);
+                up.data("container",this);
+                down.data("container",this);
                 setting.mousedown(function(e){
                     e.preventDefault();
                     e.stopPropagation();
-                    util.initProperty(_this,"base","propertySetting");
-                    util.showProperty(_this,"base","propertySetting");
+                    var container = $(this).data("container");
+                    util.initProperty(container,"container","propertySetting");
+                    util.showProperty(container,"container","propertySetting");
                 });
                 up.mousedown(function(e){
                     e.preventDefault();
                     e.stopPropagation();
-                    _this.layout.index ++;
-                    _this.drag.css({
-                        "z-index":_this.layout.index
-                    });
+                    var _c = $(this).data("container");
+                    var _id = _c.id;
+                    var _ind = CM.containerList.indexOf(_id);
+                    if(_ind>=1){
+                        var _ind1 = _ind-1;
+                        var upCId = CM.containerList[_ind1];
+                        var upC = CM.all[upCId];
+                        upC.container.before(_c.container);
+                        CM.containerList.splice(_ind,1);
+                        CM.containerList.splice(_ind1,0,_id);
+                    }
                 });
                 down.mousedown(function(e){
                     e.preventDefault();
                     e.stopPropagation();
-                    _this.layout.index --;
-                    if(_this.layout.index<0)_this.layout.index=0;
-                    _this.drag.css({
-                        "z-index":_this.layout.index
-                    });
+                    var _c = $(this).data("container");
+                    var _id = _c.id;
+                    var _ind = CM.containerList.indexOf(_id);
+                    if(_ind<CM.containerList.length-1){
+                        var _ind1 = _ind+1;
+                        var downCId = CM.containerList[_ind1];
+                        var downC = CM.all[downCId];
+                        downC.container.after(_c.container);
+                        CM.containerList.splice(_ind,1);
+                        CM.containerList.splice(_ind1,0,_id);
+                    }
                 });
                 del.mousedown(function(e){
                     e.preventDefault();
                     e.stopPropagation();
                     _this.destroy();
                 });
-                // tools.push(setting);
-                // tools.push(up);
-                // tools.push(down);
+                tools.push(setting);
+                tools.push(up);
+                tools.push(down);
                 tools.push(del);
                 return tools;
             },
@@ -183,6 +269,11 @@ define(["util"], function(util){
             },
             syncContainerUI:function(){
 
+
+                this.container.html("");
+                this._createContainer();
+                this.initAllColumns();
+                this.setComposer();
             },
             getSettings:function(){
                 var o = {
@@ -192,8 +283,13 @@ define(["util"], function(util){
                 };
                 return o;
             },
-            destroy:function(){
+            _syncUI:function(){
+                this.syncContainerUI();
+            },
+            chooseMe:function(){
 
+            },
+            destroy:function(){
                 var columns = this.property.columnComposers;
                 for(var key in columns){
                     var column = columns[key];
@@ -206,6 +302,8 @@ define(["util"], function(util){
                     }
                 }
                 this.container.remove();
+                var _ind = CM.containerList.indexOf(this.id);
+                CM.containerList.splice(_ind,1);
                 delete CM.all[this.id];
             }
         };
