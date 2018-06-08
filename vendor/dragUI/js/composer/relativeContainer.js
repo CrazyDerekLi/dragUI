@@ -19,6 +19,9 @@ define(["util"], function(util){
                             childGroupName:"列配置",
                             childGroupList:[
                                 {value:"",type:"text",field:["property","columnsSetting"],title:"列布局配置"},
+                                {value:"",type:"checkbox",field:["property","useHeight"],title:"是否启用列高"},
+                                {value:"",type:"spinner",field:["property","height"],title:"高度"},
+                                {value:"",type:"checkbox",field:["property","columnFit"],title:"控件填充"}
                             ]
                         }
                     ]
@@ -27,7 +30,45 @@ define(["util"], function(util){
             property:{
                 columnComposers:{},
                 rowIndex:0,
+                height:30,
+                useHeight:"0",
+                columnFit:"0",
                 columnsSetting:"12"
+            },
+            fitAllColumns:function(){
+
+                if(this.property.columnFit == "1"){
+                    var allColumns = this.property.columnComposers;
+                    for(var key in allColumns){
+                        var columns = allColumns[key];
+                        var height = 100/columns.length;
+                        for(var i=0;i<columns.length;i++){
+                            var comp = CM.all[columns[i]];
+                            comp.composer.css({
+                                height:"100%"
+                            });
+                            comp.drag.css({
+                                height:height+"%"
+                            });
+                            comp.unBindResize();
+                        }
+                    }
+                }else{
+                    var allColumns = this.property.columnComposers;
+                    for(var key in allColumns){
+                        var columns = allColumns[key];
+                        for(var i=0;i<columns.length;i++){
+                            var comp = CM.all[columns[i]];
+                            comp.composer.css({
+                                height:comp.layout.h
+                            });
+                            comp.drag.css({
+                                height:comp.layout.h
+                            });
+                            comp.bindResize();
+                        }
+                    }
+                }
             },
             _copyObj:function(o1,o2){
                 if(typeof o1 === "object" && o1 instanceof Array){
@@ -115,6 +156,9 @@ define(["util"], function(util){
                             border:"1px dotted #aaa",
                             "min-height": "30px"
                         });
+                    }
+                    if(this.property.useHeight == "1"){
+                        column.css("height",this.property.height);
                     }
 
                     column.attr("id",this.id+"_"+i);
@@ -245,7 +289,7 @@ define(["util"], function(util){
             _bindContainerEvent:function(){
                 var _this = this;
                 var head = $('<div class="designer_container_head">');
-                var showBtn = $('<i class="fa fa-angle-left"></i>');
+                var showBtn = $('<i class="fa fa-angle-right"></i>');
                 var tools = $('<div class="designer_container_tools">');
                 head.append(showBtn).append(tools);
                 this.container.append(head);
@@ -266,6 +310,22 @@ define(["util"], function(util){
                     $(this).removeClass("selected");
                 });
                 this.container.attr("id",this.id);
+                if(this.property.useHeight=="1"){
+                    this.bindResize();
+                }
+            },
+            bindResize:function(){
+                var _this = this;
+                var resizeOption = {
+                    delay: 150,
+                    handles:"s",
+                    stop:function(event,ui){
+                        var h = ui.size.height;
+                        _this.property.height = h;
+                        _this.syncContainerUI();
+                    }
+                };
+                this.container.resizable(resizeOption);
             },
             syncContainerUI:function(){
 
@@ -274,6 +334,7 @@ define(["util"], function(util){
                 this._createContainer();
                 this.initAllColumns();
                 this.setComposer();
+                this.fitAllColumns();
             },
             getSettings:function(){
                 var o = {

@@ -86,6 +86,12 @@ define(['iframeConfig'], function(iframeConfig){
                     && setting.field[0]=="layout"){
                     if(setting.field[1] == "h"){
                         editor = $("<input type='text'>").val(val);
+                        var _layoutid = composer.layout.layoutid;
+                        if(CM.all[_layoutid].property.columnFit == "1"){
+                            editor.attr("disabled","disabled");
+                        }else{
+                            editor.removeAttr("disabled");
+                        }
                         box.html(editor);
                         editor.change(function(){
                             _this.editorChangeData(setting,composer,$(this).val());
@@ -116,8 +122,10 @@ define(['iframeConfig'], function(iframeConfig){
                 }
                 box.html(editor);
                 editor.click(function(){
-                    _this.editorChangeData(setting,composer,$(this).is(':checked')?"1":"0");
+                    var _v = $(this).is(':checked')?"1":"0";
+                    _this.editorChangeData(setting,composer,_v);
                 });
+
             }else if(setting.type == "color"){
                 editor = $(' <div class="color_select"></div>');
                 var input = $('<input type="text" readonly="readonly">');

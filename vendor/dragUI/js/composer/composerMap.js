@@ -219,6 +219,18 @@
                 $("#designerCloseBtn").click(function(e){
                     $("#designerView").hide();
                 });
+                $("#designer_group").click(function(e){
+                    var selectedList = _this.selectedList;
+                });
+
+                $("#designer_redo").click(function(e){
+
+                });
+
+                $("#designer_do").click(function(e){
+
+                });
+
             },
             bindRelativeEvent:function(){
                 this.designer.css({
@@ -266,16 +278,24 @@
                         var newOptions = $.extend({},options,_options);
                         var composer = new _this.allComposer[type].func(newOptions);
                         var id = composer.id;
-
+                        _this.all[id] = composer;
                         if(type!="relativeContainer"){
-                            var columnComposers = _this.all[options.layout.layoutid].property.columnComposers||{};
+                            var _container = _this.all[options.layout.layoutid];
+                            var columnComposers = _container.property.columnComposers||{};
                             columnComposers[options.layout.columnid] = columnComposers[options.layout.columnid]||[];
                             columnComposers[options.layout.columnid].push(id);
+                            _container.fitAllColumns();
+
                         }
-                        _this.all[id] = composer;
+
+
                         _this.clone.remove();
                         delete _this.clone;
                         _this.clone = undefined;
+
+
+
+
                     }
                     if(_this.cloneObj){
                         var newContainerColumn = $(e.target);
@@ -284,6 +304,7 @@
                             var composer = _this.cloneObj.data("composer");
                             var container = _this.all[composer.layout.layoutid];
                             var columnComposers = container.property.columnComposers;
+                            var layoutid = composer.layout.layoutid;
                             var columnid = composer.layout.columnid;
                             var _columnid = newContainerColumn.attr("id");
                             var _layoutid = _columnid.split("_")[0];
@@ -297,6 +318,8 @@
                             composer.layout.columnid = _columnid;
                             composer.layout.layoutid = _layoutid;
                             composer.drag.appendTo(columnObj);
+                            container.fitAllColumns();
+                            newContainer.fitAllColumns();
                         }
                         if(_this.cloneObj){
                             _this.cloneObj.remove();
@@ -348,8 +371,8 @@
 
                         var o = Rect.obj;
 
-                        var left = e.pageX-Rect.container.offset().left+20;
-                        var top = e.pageY-Rect.container.offset().top+20;
+                        var left = e.pageX-Rect.container.offset().left+30;
+                        var top = e.pageY-Rect.container.offset().top+30;
                         o.css("left", left);
                         o.attr("startX",left);
                         o.data("mouseBeginX",left);
@@ -367,8 +390,8 @@
                         e.preventDefault();
                         var o = Rect.obj;
                         if(o&&Rect.status){
-                            var dx = e.pageX-Rect.container.offset().left+20 - o.data("mouseBeginX");
-                            var dy = e.pageY-Rect.container.offset().top+20 - o.data("mouseBeginY");
+                            var dx = e.pageX-Rect.container.offset().left+30 - o.data("mouseBeginX");
+                            var dy = e.pageY-Rect.container.offset().top+30 - o.data("mouseBeginY");
                             if(dx<0){
                                 o.css("left" , parseFloat(o.attr("startX"))+dx );
                             }else{
@@ -800,8 +823,8 @@
                     if(_this.relativeMoveStart && _this.cloneObj){
                         _this.cloneObj.css({
                             position:"absolute",
-                            left:e.pageX-_this.designer.offset().left+25,
-                            top:e.pageY-_this.designer.offset().top+25
+                            left:e.pageX-_this.designer.offset().left+35,
+                            top:e.pageY-_this.designer.offset().top+35
                         });
                     }else if(_this.cloneObj){
                         _this.cloneObj.remove();

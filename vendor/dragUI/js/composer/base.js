@@ -127,6 +127,7 @@ define(["util"], function(util){
 
             this.box.append(this.drag);
             this.composer = this._createComposer();
+
             this.drag.append(this.composer);
             this.afterCreateComposer();
             if(this.designer){
@@ -144,11 +145,13 @@ define(["util"], function(util){
         },
         _getTools:function(){
             var tools = this.getTools()||[];
+            var moveBtn = $("<i class='fa fa-arrows-alt drag_move_btn' title='移动'>");
             var setting = $("<i class='fa fa-cog' title='配置'>");
             var up = $("<i class='fa fa-arrow-alt-circle-up' title='上移'>");
             var down = $("<i class='fa fa-arrow-alt-circle-down' title='下移'>");
             var del = $("<i class='fa fa-trash-alt' title='删除'>");
             var _this = this;
+
             setting.mousedown(function(e){
                 e.preventDefault();
                 e.stopPropagation();
@@ -206,6 +209,8 @@ define(["util"], function(util){
                     CM.relativeMoveStart = true;
                 });
                 tools.splice(0,0,move);
+            }else{
+                tools.splice(0,0,moveBtn);
             }
 
             tools.push(setting);
@@ -223,7 +228,7 @@ define(["util"], function(util){
             var _this = this;
             //		绑定设计器拖拽/resize事件
             this.drag.addClass("designer_drag_obj");
-            this.drag.append($("<div class='drag_msk'>"));
+            //this.drag.append($("<div class='drag_msk'>"));
             this.dragHead = $("<div class='designer_drag_head'>");
             this.dragTools = $("<div class='designer_drag_tools'>");
 
@@ -240,7 +245,7 @@ define(["util"], function(util){
             });
             if(CM.designerType == "absolute"){
                 this.drag.draggable({
-                    handle: ".drag_msk",
+                    handle: ".drag_move_btn",
                     snap: ".designer_drag_obj",
                     snapMode: "outer",
                     containment: "#designer",
@@ -279,10 +284,11 @@ define(["util"], function(util){
                 containment: "#designer",
                 delay: 150,
                 resize:function(event,ui){
+
+                },
+                stop:function(event,ui){
                     _this.layout.w = ui.size.width;
                     _this.layout.h = ui.size.height;
-                },
-                stop:function(){
                     util.updateProperty(_this,"base","propertySetting");
                     _this.afterResize(_this.composer);
                 }
@@ -294,6 +300,12 @@ define(["util"], function(util){
             this.drag.resizable(resizeOption);
             this.drag.attr("id",this.id);
             this.afterResize(this.composer);
+        },
+        bindResize:function(){
+            this.drag.resizable( "enable" );
+        },
+        unBindResize:function(){
+            this.drag.resizable( "disable" );
         },
         _getOptions:function(){
             return this;
