@@ -97,12 +97,19 @@ define(["util"], function(util){
             return this;
         },
         //将来控件复制粘贴的实现，获取options配置~~进行控件的复制，目前没做
-        _clone:function(options){
-            options.id = '';
+        _clone:function(){
             var o = {};
-            o = $.extend(o,this);
-            o.init(options);
+            var composerSetting = this.getSettings();
+            delete composerSetting.id;
+            var cloneObj = this.clone();
+            o = $.extend(o,composerSetting,cloneObj);
+            o.box = this.box;
+            o.designer = this.designer;
+            o.designerType = this.designerType;
             return o;
+        },
+        clone:function(){
+            return {};
         },
         //创建拖拽对象，这个是设计模式和生产模式的入口
         _createDrag:function(){
@@ -264,12 +271,13 @@ define(["util"], function(util){
                 var id = _this.id;
                 CM.select(id);
             });
+            var boxid = this.box.attr("id");
             if(this.designerType == "absolute"){
                 this.drag.draggable({
                     handle: ".drag_move_btn",
                     snap: ".designer_drag_obj",
                     snapMode: "outer",
-                    containment: "#designer",
+                    containment: "#"+boxid,
                     scroll: false,
                     start: function(e,ui) {
                         ui.helper.addClass("start_move");
@@ -310,12 +318,9 @@ define(["util"], function(util){
             if(CM.lock){
                 this.drag.draggable( "option", "revert", true );
             }
-            var containerId = "designer";
-            if(this.layout.columnid){
-                containerId = this.layout.columnid;
-            }
+
             var resizeOption = {
-                containment: "#designer",
+                containment: "#"+boxid,
                 delay: 150,
                 resize:function(event,ui){
 
@@ -396,6 +401,7 @@ define(["util"], function(util){
         },
         //创建控件内容接口
         createComposer:function(){},
+        //创建控件dom后的回调js
         afterCreateComposer:function(){},	//		创建控件追加到页面后的回调
         bindEvent:function(){},				//		给控件绑定事件
         //获取控件setting，用于控件的保存和复制，复制时去掉id并且需要添加box等其他属性

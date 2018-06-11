@@ -297,7 +297,7 @@ define(['iframeConfig'], function(iframeConfig){
                     var composer = CM.all[setting.composerId];
                     var value = setting.oldValue;
                     if(composer){
-                        _this.editorChangeData(sett,composer,value,sett.type,"");
+                        _this.editorChangeData(sett,composer,value,"0","");
                     }
 
                 }else if(setting.type == "dragUpdate"){

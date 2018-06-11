@@ -211,6 +211,7 @@
                         _this.cloneObj.remove();
                         _this.relativeMoveStart = false;
                     }
+                    _this.cloneObj = undefined;
                 });
                 $("body").delegate("*","click",function(e){
 
