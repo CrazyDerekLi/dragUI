@@ -37,18 +37,18 @@ define(['base','util'], function(base, util){
                         {
                             childGroupName:"布局属性",
                             childGroupList:[
-                                {value:"",type:"spinner",field:["layout","l"],title:"左部偏移"},
-                                {value:"",type:"spinner",field:["layout","t"],title:"顶部偏移"},
-                                {value:"",type:"spinner",field:["layout","w"],title:"宽度"},
-                                {value:"",type:"spinner",field:["layout","h"],title:"高度"},
-                                {value:"",type:"spinner",field:["layout","index"],title:"层级"},
+                                {value:"",type:"spinner",field:["layout","l"],title:"左部偏移",opeType:"1"},
+                                {value:"",type:"spinner",field:["layout","t"],title:"顶部偏移",opeType:"1"},
+                                {value:"",type:"spinner",field:["layout","w"],title:"宽度",opeType:"1"},
+                                {value:"",type:"spinner",field:["layout","h"],title:"高度",opeType:"1"},
+                                {value:"",type:"spinner",field:["layout","index"],title:"层级",opeType:"1"},
                             ]
                         },
                         {
                             childGroupName:"私有属性",
                             childGroupList:[
-                                {value:"",type:"text",field:["property","private","id"],title:"id"},
-                                {value:"",type:"text",field:["property","private","info"],title:"标签文本"},
+                                {value:"",type:"text",field:["property","private","id"],title:"id",opeType:"1"},
+                                {value:"",type:"text",field:["property","private","info"],title:"标签文本",opeType:"1"},
                             ]
                         }
                     ]
@@ -58,11 +58,11 @@ define(['base','util'], function(base, util){
                         {
                             childGroupName:"样式设置",
                             childGroupList:[
-                                {value:"",type:"color",field:["property","style","fontColor"],title:"字体颜色"},
-                                {value:"",type:"spinner",field:["property","style","fontSize"],title:"字体大小",options:{min:12,max:24}},
-                                {value:"",type:"slider",field:["property","style","fontSize"],title:"字体大小",options:{dw:"%"}},
-                                {value:"",type:"checkbox",field:["property","style","hasBackground"],title:"使用背景"},
-                                {value:"",type:"color",field:["property","style","background"],title:"背景色"},
+                                {value:"",type:"color",field:["property","style","fontColor"],title:"字体颜色",opeType:"1"},
+                                {value:"",type:"spinner",field:["property","style","fontSize"],title:"字体大小",options:{min:12,max:24},opeType:"1"},
+                                {value:"",type:"slider",field:["property","style","fontSize"],title:"字体大小",options:{dw:"%"},opeType:"1"},
+                                {value:"",type:"checkbox",field:["property","style","hasBackground"],title:"使用背景",opeType:"1"},
+                                {value:"",type:"color",field:["property","style","background"],title:"背景色",opeType:"1"},
                                 {value:"",type:"self",field:["property","style","textAlign"],title:"对齐方式",editor:function(box,setting,composer){
                                         var left = $('<div class="property_btn">居左</div>');
                                         var center = $('<div class="property_btn">居中</div>');

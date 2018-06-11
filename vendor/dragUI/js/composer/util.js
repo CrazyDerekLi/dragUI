@@ -73,12 +73,19 @@ define(['iframeConfig'], function(iframeConfig){
             var editor = undefined;
             var _this = this;
             var val = this.getComposerValue(setting.field,composer);
-
+            var opeType = setting.opeType||"";
+            //console.log(setting);
             if(setting.type == "text"){
                 editor = $("<input type='text'>").val(val);
                 box.html(editor);
-                editor.change(function(){
-                    _this.editorChangeData(setting,composer,$(this).val());
+                editor.data("oldValue",val);
+                editor.data("newValue",val);
+                editor.change(function(e){
+                    var oldValue = $(this).data("newValue");
+                    $(this).data("oldValue",oldValue);
+                    var newValue = $(this).val();
+                    $(this).data("newValue",newValue);
+                    _this.editorChangeData(setting,composer,newValue,opeType,oldValue);
                 });
             }else if(setting.type == "spinner"){
                 if(composer.designerType == "relative"
@@ -93,24 +100,29 @@ define(['iframeConfig'], function(iframeConfig){
                             editor.removeAttr("disabled");
                         }
                         box.html(editor);
+                        editor.data("oldValue",val);
+                        editor.data("newValue",val);
                         editor.change(function(){
-                            _this.editorChangeData(setting,composer,$(this).val());
-                            console.log($(this).val());
+                            var oldValue = $(this).data("newValue");
+                            $(this).data("oldValue",oldValue);
+                            var newValue = $(this).val();
+                            $(this).data("newValue",newValue);
+                            _this.editorChangeData(setting,composer,newValue,opeType,oldValue);
                         });
                     }
                 }else{
                     editor = $("<input type='text'>").val(val);
                     box.html(editor);
+                    editor.data("oldValue",val);
+                    editor.data("newValue",val);
                     var options = setting.options||{};
                     options.min = options.min || 0;
-                    options.start = function(event, ui){
-                        _this.editorChangeData(setting,composer,$(this).val());
-                    };
                     options.stop = function(event, ui){
-                        _this.editorChangeData(setting,composer,$(this).val());
-                    };
-                    options.change = function(event, ui){
-                        _this.editorChangeData(setting,composer,$(this).val());
+                        var oldValue = $(this).data("newValue");
+                        $(this).data("oldValue",oldValue);
+                        var newValue = $(this).val();
+                        $(this).data("newValue",newValue);
+                        _this.editorChangeData(setting,composer,newValue,opeType,oldValue);
                     };
                     editor.spinner(options);
                 }
@@ -121,9 +133,15 @@ define(['iframeConfig'], function(iframeConfig){
                     editor.prop("checked","true");
                 }
                 box.html(editor);
+                editor.data("oldValue",val);
+                editor.data("newValue",val);
                 editor.click(function(){
                     var _v = $(this).is(':checked')?"1":"0";
-                    _this.editorChangeData(setting,composer,_v);
+                    var oldValue = $(this).data("newValue");
+                    $(this).data("oldValue",oldValue);
+                    var newValue = _v;
+                    $(this).data("newValue",newValue);
+                    _this.editorChangeData(setting,composer,newValue,opeType,oldValue);
                 });
 
             }else if(setting.type == "color"){
@@ -131,7 +149,8 @@ define(['iframeConfig'], function(iframeConfig){
                 var input = $('<input type="text" readonly="readonly">');
                 editor.append(input);
                 box.html(editor);
-
+                editor.data("oldValue",val);
+                editor.data("newValue",val);
                 input.spectrum({
                     color:val,
                     theme: "sp-light",
@@ -139,12 +158,16 @@ define(['iframeConfig'], function(iframeConfig){
                     showAlpha:true,
                     showButtons:false,
                     preferredFormat:'hex',
-                    move:function(color){
+                    change:function(color){
                         var r = parseInt(color._r);
                         var g = parseInt(color._g);
                         var b = parseInt(color._b);
                         var _color = 'rgba('+r+','+g+','+b+','+color.getAlpha()+')';
-                        _this.editorChangeData(setting,composer,_color);
+                        var oldValue = $(this).data("newValue");
+                        editor.data("oldValue",oldValue);
+                        var newValue = _color;
+                        editor.data("newValue",newValue);
+                        _this.editorChangeData(setting,composer,newValue,opeType,oldValue);
                     }
                 });
             }else if(setting.type == "slider"){
@@ -154,6 +177,8 @@ define(['iframeConfig'], function(iframeConfig){
                 var handle = $('<div class="slider_style ui-slider-handle"></div>');
                 slider.append(handle);
                 editor.append(slider);
+                editor.data("oldValue",val);
+                editor.data("newValue",val);
                 var options = setting.options||{};
                 var _formatter = options.formatter||function(val,options){
                     return val;
@@ -184,7 +209,12 @@ define(['iframeConfig'], function(iframeConfig){
                     },
                     slide: function( event, ui ) {
                         handle.text( ui.value);
-                        _this.editorChangeData(setting,composer,_formatter(ui.value,options));
+                        var _v = _formatter(ui.value,options);
+                        var oldValue = $(this).data("newValue");
+                        editor.data("oldValue",oldValue);
+                        var newValue = _v;
+                        editor.data("newValue",newValue);
+                        _this.editorChangeData(setting,composer,newValue,opeType,oldValue);
                     }
                 });
             }
@@ -217,7 +247,23 @@ define(['iframeConfig'], function(iframeConfig){
                 o[list[0]] = value;
             }
         },
-        editorChangeData:function(setting,composer,value){
+        addOpe:function(o){
+            CM.opeList = CM.opeList||[];
+            var _ind = CM.opeIndex;
+            CM.opeList.splice(0,_ind,o);
+            CM.opeIndex = 0;
+        },
+        editorChangeData:function(setting,composer,value,opeType,oldValue){
+            if(opeType == "1"){
+                var o = {
+                    oldValue:oldValue,
+                    newValue:value,
+                    composerId:composer.id,
+                    type:"editorUpdate",
+                    setting:setting
+                };
+                this.addOpe(o);
+            }
             if(composer.designerType == "relative"
                 && setting.field.length==2
                 && setting.field[0]=="layout"
@@ -229,6 +275,114 @@ define(['iframeConfig'], function(iframeConfig){
 
             composer._syncUI();
             composer.chooseMe();
+        },
+        doOpeSetting:function(setting,type){
+            var _this = this;
+            //console.log(setting);
+            if(type == "1"){
+                if(setting.type == "insertAbsoluteComposer"){
+                    var composer = CM.all[setting.composerId];
+                    if(composer){
+                        composer.destroy();
+                    }
+                }else if(setting.type == "editorUpdate"){
+                    var sett = setting.setting;
+                    var composer = CM.all[setting.composerId];
+                    var value = setting.oldValue;
+                    if(composer){
+                        _this.editorChangeData(sett,composer,value,sett.type,"");
+                    }
+
+                }else if(setting.type == "dragUpdate"){
+                    var position = setting.oldValue;
+                    var composer = CM.all[setting.composerId];
+                    if(composer){
+                        composer.layout.l = position.left;
+                        composer.layout.t = position.top;
+                        composer.syncDragUI();
+                        _this.updateProperty(composer,"base","propertySetting");
+
+                    }
+
+                }else if(setting.type == "resizeUpdate"){
+                    var size = setting.oldValue;
+                    var composer = CM.all[setting.composerId];
+                    if(composer){
+                        composer.layout.w = size.w;
+                        composer.layout.h = size.h;
+                        composer._syncUI();
+                        composer.afterResize(composer.composer);
+                    }
+
+                }else if(setting.type == "commonSettingChange"){
+                    for(var i=0;i<setting.composerList.length;i++){
+                        var layout = setting.oldValue[i];
+                        var composer = CM.all[setting.composerList[i]];
+                        if(composer){
+                            composer.layout.w = layout.w;
+                            composer.layout.h = layout.h;
+                            composer.layout.l = layout.l;
+                            composer.layout.t = layout.t;
+                            composer.layout.index = layout.index;
+                            composer._syncUI();
+                            composer.afterResize(composer.composer);
+                        }
+                    }
+                }
+            }else if(type == "0"){
+                if(setting.type == "insertAbsoluteComposer"){
+                    var composer = CM.all[setting.composerId];
+                    if(composer){
+                        composer.destroy();
+                    }
+                    var composer = new CM.allComposer[setting.newValue.composerSettings.classname].func(setting.newValue.composerSettings);
+                    CM.all[composer.id] = composer;
+                }else if(setting.type == "editorUpdate"){
+                    var sett = setting.setting;
+                    var composer = CM.all[setting.composerId];
+                    var value = setting.newValue;
+                    if(composer){
+                        _this.editorChangeData(sett,composer,value,sett.type,"");
+                    }
+
+                }else if(setting.type == "dragUpdate"){
+                    var position = setting.newValue;
+                    var composer = CM.all[setting.composerId];
+                    if(composer){
+                        composer.layout.l = position.left;
+                        composer.layout.t = position.top;
+                        console.log(position);
+                        composer.syncDragUI();
+                        _this.updateProperty(composer,"base","propertySetting");
+
+                    }
+
+                }else if(setting.type == "resizeUpdate"){
+                    var size = setting.newValue;
+                    var composer = CM.all[setting.composerId];
+                    if(composer){
+                        composer.layout.w = size.w;
+                        composer.layout.h = size.h;
+                        composer._syncUI();
+                        composer.afterResize(composer.composer);
+                    }
+
+                }else if(setting.type == "commonSettingChange"){
+                    for(var i=0;i<setting.composerList.length;i++){
+                        var layout = setting.newValue[i];
+                        var composer = CM.all[setting.composerList[i]];
+                        if(composer){
+                            composer.layout.w = layout.w;
+                            composer.layout.h = layout.h;
+                            composer.layout.l = layout.l;
+                            composer.layout.t = layout.t;
+                            composer.layout.index = layout.index;
+                            composer._syncUI();
+                            composer.afterResize(composer.composer);
+                        }
+                    }
+                }
+            }
         },
         initProperty:function(composer,propertyCode,propertySettingKey){
             var util = this;

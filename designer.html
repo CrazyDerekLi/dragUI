@@ -63,6 +63,23 @@
                     ]
                 }]
             }];
+            var bgImgList = [{
+                title:"背景1",link:"vendor/dragUI/image/bg1.png"
+            },{
+                title:"背景2",link:"vendor/dragUI/image/bg2.png"
+            },{
+                title:"背景3",link:"vendor/dragUI/image/bg3.png"
+            },{
+                title:"背景4",link:"vendor/dragUI/image/bg4.png"
+            },{
+                title:"背景5",link:"vendor/dragUI/image/bg5.png"
+            },{
+                title:"背景6",link:"vendor/dragUI/image/bg6.png"
+            },{
+                title:"背景7",link:"vendor/dragUI/image/bg7.png"
+            },{
+                title:"背景8",link:"vendor/dragUI/image/bg8.png"
+            }];
             composerMap.init({
                 designer:$("#designer"),
                 groupList:groupList,
@@ -70,8 +87,9 @@
                     console.log(jsonStr);
                     alert("我的保存成功");
                 }
-                //,designerType:"absolute"
-                ,designerType:"relative"
+                ,bgImgList:bgImgList
+                ,designerType:"absolute"
+                //,designerType:"relative"
                 //,theme:"dark"//dark or white，
             });
             composerMap.show(
@@ -88,39 +106,14 @@
 <div id="dragList">
     <ul id="groupList" class="groupList">
         <li bindShow="bodySettingBox" id="body_setting">设置</li>
+        <li bindShow="commonSettingBox" id="common_setting">布局</li>
     </ul>
     <div id="bodySettingBox" class="groupCenter">
         <div id="bodySettingList" class="property_list">
-            <div class="property_item">
-                <div class="property_label">
-                    <div class="property_label_title">
-                        页面宽度：
-                    </div>
-                </div>
-                <div class="property_info">
-                    <div class="spinner_editor_box">
-                        <div class="spinner_box">
-                            <input type="text" id="bodyWidth" style="width:60px;"/>
-                        </div>
-                        <div class="spinner_type">
-                            <label class="selected"><i class="far"></i>px</label>
-                            <label><i class="far"></i>%</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="property_item">
-                <div class="property_label">
-                    <div class="property_label_title">
-                        背景颜色：
-                    </div>
-                </div>
-                <div class="property_info">
-                    <div class="color_select">
-                        <input id="bodyBg" type="text" readonly="readonly">
-                    </div>
-                </div>
-            </div>
+        </div>
+    </div>
+    <div id="commonSettingBox" class="groupCenter">
+        <div id="commonSettingList" class="property_list">
         </div>
     </div>
 </div>
@@ -139,7 +132,7 @@
     <div id="designerBg">
     </div>
     <div id="designerContainer">
-        <div id="designer" style="width:1920px;height:1080px;">
+        <div id="designer" style="width:1920px;height:1080px;position:relative;">
 
         </div>
     </div>

@@ -102,7 +102,7 @@ define(["util"], function(util){
         _createDrag:function(){
             this._destroyDrag();
             this.drag = $("<div>");
-            if(CM.designerType == "absolute"){
+            if(this.designerType == "absolute"){
                 var l = this.layout.l;
                 var t = this.layout.t;
                 l = parseInt(l);
@@ -178,7 +178,17 @@ define(["util"], function(util){
             del.mousedown(function(e){
                 e.preventDefault();
                 e.stopPropagation();
+                CM.opeList = CM.opeList||[];
+                var o = {
+                    oldValue:_this.getSettings(),
+                    newValue:"",
+                    composerId:_this.id,
+                    type:"deleteComposer"
+                };
+                CM.opeList.splice(0,CM.opeIndex,o);
+                CM.opeIndex = 0;
                 _this.destroy();
+
             });
             if(this.designerType == "relative"){
                 var move = $("<i class='fa fa-arrows-alt' title='移动'>");
@@ -243,7 +253,7 @@ define(["util"], function(util){
                 var id = _this.id;
                 CM.select(id);
             });
-            if(CM.designerType == "absolute"){
+            if(this.designerType == "absolute"){
                 this.drag.draggable({
                     handle: ".drag_move_btn",
                     snap: ".designer_drag_obj",
@@ -264,11 +274,24 @@ define(["util"], function(util){
                         ui.helper.css({
                             opacity:1
                         });
+                        var oldPosition = {
+                            left:_this.layout.l,
+                            top:_this.layout.t
+                        };
                         var position = ui.position;
                         _this.layout.l = position.left;
                         _this.layout.t = position.top;
                         util.updateProperty(_this,"base","propertySetting");
                         _this.afterDrag();
+                        _this.syncGroup();
+                        var o = {
+                            oldValue:oldPosition,
+                            newValue:position,
+                            composerId:_this.id,
+                            type:"dragUpdate"
+                        };
+                        util.addOpe(o);
+
                     }
                 });
             }
@@ -287,10 +310,26 @@ define(["util"], function(util){
 
                 },
                 stop:function(event,ui){
+                    var oldValue = {
+                        w:_this.layout.w,
+                        h:_this.layout.h
+                    };
+                    var newValue = {
+                        w: ui.size.width,
+                        h: ui.size.height
+                    }
                     _this.layout.w = ui.size.width;
                     _this.layout.h = ui.size.height;
                     util.updateProperty(_this,"base","propertySetting");
                     _this.afterResize(_this.composer);
+
+                    var o = {
+                        oldValue:oldValue,
+                        newValue:newValue,
+                        composerId:_this.id,
+                        type:"resizeUpdate"
+                    };
+                    util.addOpe(o);
                 }
             };
             if(this.designerType == "relative"){
@@ -331,6 +370,18 @@ define(["util"], function(util){
                 left:l,
                 top:t
             });
+            this.syncGroup();
+        },
+        syncGroup:function(){
+            var bindGroup = CM.bindGroupList;
+            for(var key in bindGroup){
+                for(var i=0;i<bindGroup[key].length;i++){
+                    if(bindGroup[key][i] == this.id){
+                        CM.initGroup(key);
+                        break;
+                    }
+                }
+            }
         },
         createComposer:function(){},
         afterCreateComposer:function(){},	//		创建控件追加到页面后的回调
@@ -354,7 +405,9 @@ define(["util"], function(util){
         setValue:function(value){},			//		控件赋值
         getValue:function(){},				//		控件取值
         		//		渲染
-        afterDrag:function(){},				//		拖拽结束事件
+        afterDrag:function(){
+
+        },				//		拖拽结束事件
         afterResize:function(){
 
         },			//		调整列宽结束事件

@@ -1,6 +1,7 @@
 (function(){
     var dep = [];
     composerConfig.relativeContainer = 'dragUI/js/composer/relativeContainer';
+    composerConfig.util = 'dragUI/js/composer/util';
     var realtiveGroup = {
         groupName:"布局",groupList:[{
             groupName:"布局组件",composerList:[
@@ -34,11 +35,14 @@
         }
         var composerMap = {
             allComposer:composerType,
-            realtiveGroup:realtiveGroup,
+            opeList:[],
+            opeIndex:0,
             controlPress:false,
             selectedList:{},
+            bindGroupList:{},
             groupList:[],
             containerList:[],
+            bgImgList:[],
             all:{},
             lock:false,
             current:null,
@@ -63,7 +67,8 @@
                 pLType:"px",
                 pRType:"px",
                 bgColor:"#112247",
-                className:""
+                className:"",
+                bgImage:""
             },
             save:function(){
                 alert("保存成功");
@@ -99,6 +104,30 @@
                         obj.removeClass("child");
                     }
                 }
+                if(this.current&&this.designerType == "absolute"){
+                    $("#commonLeft").spinner("value",this.current.layout.l);
+                    $("#commonTop").spinner("value",this.current.layout.t);
+                    $("#commonWidth").spinner("value",this.current.layout.w);
+                    $("#commonHeight").spinner("value",this.current.layout.h);
+                    $("#commonIndex").spinner("value",this.current.layout.index);
+
+                    var bindGroup = this.bindGroupList;
+                    for(var key in bindGroup){
+                        for(var i=0;i<bindGroup[key].length;i++){
+                            if(bindGroup[key][i] == this.current.id){
+                                this.initGroup(key);
+                                break;
+                            }
+                        }
+                    }
+                }else{
+                    $("#commonLeft").spinner("value","");
+                    $("#commonTop").spinner("value","");
+                    $("#commonWidth").spinner("value","");
+                    $("#commonHeight").spinner("value","");
+                    $("#commonIndex").spinner("value","");
+                }
+
             },
             changeTheme:function(theme){
 
@@ -130,7 +159,7 @@
                 this.groupList = options.groupList;
                 this.theme = options.theme||this.theme;
                 this.save = options.save||this.save;
-
+                this.bgImgList = options.bgImgList||this.bgImgList;
                 this.changeTheme(this.theme);
 
 
@@ -142,6 +171,7 @@
                 }else{
                     this.bindAbsoluteEvent();
                     this.initAbsoluteBodySetting();
+                    this.initCommonSetting();
                 }
 
 
@@ -149,11 +179,19 @@
                 $("body").delegate("*","mousedown",function(e){
                     if(
                         !$(e.target).hasClass("colorpicker")
+                        && !$(e.target).hasClass("propertyList")
                         && !$(e.target).parents(".colorpicker").get(0)
                         && !$(e.target).parents(".propertyList").get(0)
                         && !$(e.target).parents(".designer_drag_tools").get(0)
+                        && !$(e.target).hasClass("bind-group")
+                        && !$(e.target).parents(".bind-group").get(0)
+                        && $(e.target).attr("id")!="designer_tools"
+                        && !$(e.target).parents("#designer_tools").get(0)
+                        && $(e.target).attr("id")!="dragList"
+                        && !$(e.target).parents("#dragList").get(0)
                     ){
                         _this.select("");
+                        _this.closeAllGroup();
                         //_this.designer.find(".designer_drag_obj").removeClass("selected");
                         _this.current = null;
                     }
@@ -221,16 +259,203 @@
                 });
                 $("#designer_group").click(function(e){
                     var selectedList = _this.selectedList;
+                    var groupid = "group_"+new Date().getTime();
+                    _this.bindGroupList = _this.bindGroupList||{};
+                    var list = [];
+                    for (var key in selectedList) {
+                        list.push(key);
+                    }
+                    var _result = _this.getSelectedComposerList(list);
+                    var _list = _result.list;
+                    var inGroup = _result.inGroup;
+                    if(_list.length == list.length){
+                        for(var i=0;i<inGroup.length;i++){
+                            var gid = inGroup[i];
+                            _this.closeGroup(gid);
+                            delete _this.bindGroupList[gid];
+                        }
+
+                        _this.bindGroupList[groupid] = _list;
+                        _this.initGroup(groupid);
+                    }else{
+                        alert("已存在group,且未全部选中，不能组合");
+                    }
+
                 });
 
                 $("#designer_redo").click(function(e){
+                    e.preventDefault();
+                    var opeList = CM.opeList;
+                    var opeIndex = CM.opeIndex;
+                    if(opeList.length-1>=opeIndex){
+                        var opeSetting = opeList[opeIndex];
+                        var _util = _this.allComposer.util.func;
+                        _util.doOpeSetting(opeSetting,"1");
 
+                    }
+                    CM.opeIndex++;
+                    if(CM.opeIndex>opeList.length){
+                        CM.opeIndex = opeList.length;
+                    }
                 });
 
                 $("#designer_do").click(function(e){
+                    e.preventDefault();
+                    CM.opeIndex--;
+                    if(CM.opeIndex<=0){
+                        CM.opeIndex = 0;
+                    }
+                    var opeList = CM.opeList;
+                    var opeIndex = CM.opeIndex;
+                    if(opeIndex>=0&&opeList.length>0){
+                        var opeSetting = opeList[opeIndex];
+                        var _util = _this.allComposer.util.func;
+                        _util.doOpeSetting(opeSetting,"0");
+
+                    }
 
                 });
 
+            },
+            closeGroup:function(groupid){
+                if($("#"+groupid).get(0)){
+                    $("#"+groupid).remove();
+                }
+            },
+            closeAllGroup:function(){
+                $(".bind-group").remove();
+            },
+            initGroup:function(groupid){
+                var _this = this;
+                this.closeGroup(groupid);
+                var group = $("<div>").attr("id",groupid).addClass("bind-group");
+                var groupTools = $("<div>").addClass("bind-group-tools");
+                var del = $("<i class='fa fa-trash-alt'>").data("groupid",groupid);
+                del.appendTo(groupTools);
+                groupTools.appendTo(group);
+                del.click(function(e){
+                    console.log(1234);
+                    var _groupid = $(this).data("groupid");
+                    console.log(123);
+                    console.log(_groupid);
+                    $("#"+_groupid).remove();
+                    delete _this.bindGroupList[_groupid]
+                });
+                var groupList = this.bindGroupList[groupid];
+                var l=0,t=0,r=0,b=0;
+                for(var i=0;i<groupList.length;i++){
+                    var composer = this.all[groupList[i]];
+                    var _w = composer.layout.w;
+                    var _h = composer.layout.h;
+                    var _l = composer.layout.l;
+                    var _t = composer.layout.t;
+                    _l = parseInt(_l);
+                    _t = parseInt(_t);
+                    _w = parseInt(_w);
+                    _h = parseInt(_h);
+                    var _r = _l+_w;
+                    var _b = _t +_h;
+                    if(i==0){
+                        l = _l;
+                        t = _t;
+                        r = _r;
+                        b = _b;
+                    }else{
+                        l = l<_l?l:_l;
+                        t = t<_t?t:_t;
+                        r = r>_r?r:_r;
+                        b = b>_b?b:_b;
+                    }
+                }
+                group.css({
+                    position:"absolute",
+                    left:l,
+                    top:t,
+                    width:r-l,
+                    height:b-t,
+                    border:"1px solid red",
+                    background:"#ccc",
+                    opacity:0.5,
+                    "z-index":0
+                });
+                group.appendTo(this.designer);
+                group.mousedown(function(e){
+                   $(this).css({
+                       "z-index":100000
+                   });
+                });
+                group.mouseup(function(){
+                    $(this).css({
+                        "z-index":0
+                    });
+                });
+                group.draggable({
+                    containment:"#designer",
+                    start:function(event, ui){
+                        ui.helper.data("startPosition",ui.position);
+                    },
+                    stop:function(event, ui){
+                        var startPosition = ui.helper.data("startPosition");
+                        var py = {
+                            l:ui.position.left - startPosition.left,
+                            t:ui.position.top - startPosition.top
+                        };
+                        var groupid = ui.helper.attr("id");
+                        var groupList = _this.bindGroupList[groupid];
+                        for(var j=0;j<groupList.length;j++){
+                            var c = _this.all[groupList[j]];
+                            c.layout.l += py.l;
+                            c.layout.t += py.t;
+                            c.syncDragUI();
+                        }
+                    }
+                });
+
+            },
+            getSelectedComposerList:function(list1){
+                var list = [].concat(list1);
+                this.bindGroupList = this.bindGroupList||{};
+                var inGroup = [];
+                var delList = [];
+                for(var key in this.bindGroupList){
+                    var group = this.bindGroupList[key];
+                    var indexList = [];
+                    var allIn = true;
+                    for(var i=0;i<group.length;i++){
+                        var groupItem = group[i];
+                        var _in = false;
+                        for(var j=0;j<list.length;j++){
+                            var item = list[j];
+                            if(groupItem == item){
+                                indexList.push(j);
+                                _in = true;
+                                break;
+                            }
+                        }
+                        if(_in == false){
+                            allIn = false;
+                        }
+                    }
+                    if(allIn == false){
+                        delList = delList.concat(indexList);
+                    }else{
+                        if(indexList.length>0){
+                            inGroup.push(key);
+                        }
+                    }
+
+                }
+                delList.sort(function(a,b){
+                    return b-a;
+                });
+                for(var i=0;i<delList.length;i++){
+                    var _ind = delList[i];
+                    list.splice(_ind,1);
+                }
+                return {
+                    inGroup:inGroup,
+                    list:list
+                };
             },
             bindRelativeEvent:function(){
                 this.designer.css({
@@ -251,12 +476,14 @@
                             classname:type,
                             box : container
                         };
+                        var relCreateSetting = "";
                         if(type!="relativeContainer"){
                             if(_this.designer.is(_c)){
                                 var newContainerOptions = $.extend({},options,{property:{columns:["12"]}});
                                 var container = new _this.allComposer["relativeContainer"].func(newContainerOptions);
                                 var id = container.id;
                                 _this.all[id] = container;
+                                relCreateSetting = container.getSettings();
                                 options.layout = options.layout||{};
                                 options.layout.columnid = id+"_0";
                                 options.layout.layoutid = id;
@@ -288,7 +515,16 @@
 
                         }
 
-
+                        var o = {
+                            oldValue:{},
+                            newValue:{
+                                composerSettings:composer.getSettings(),
+                                relCreateSetting:relCreateSetting
+                            },
+                            composerId:id,
+                            type:"insertRelativeComposer"
+                        };
+                        CM.allComposer.util.func.addOpe(o);
                         _this.clone.remove();
                         delete _this.clone;
                         _this.clone = undefined;
@@ -320,6 +556,22 @@
                             composer.drag.appendTo(columnObj);
                             container.fitAllColumns();
                             newContainer.fitAllColumns();
+
+
+                            var o = {
+                                oldValue:{
+                                    layoutid:layoutid,
+                                    columnid:columnid
+                                },
+                                newValue:{
+                                    layoutid:_layoutid,
+                                    columnid:_columnid
+                                },
+                                composerId:id,
+                                type:"dragRelativeComposer"
+                            };
+                            CM.allComposer.util.func.addOpe(o);
+
                         }
                         if(_this.cloneObj){
                             _this.cloneObj.remove();
@@ -365,14 +617,17 @@
                         }
                     },
                     start:function(e){
-                        if($(e.target).hasClass("designer_drag_obj")||$(e.target).parents(".designer_drag_obj").get(0)){
+                        if($(e.target).hasClass("designer_drag_obj")
+                            ||$(e.target).parents(".designer_drag_obj").get(0)
+                            ||$(e.target).hasClass("bind-group")
+                        ){
                             return;
                         }
 
                         var o = Rect.obj;
 
-                        var left = e.pageX-Rect.container.offset().left+30;
-                        var top = e.pageY-Rect.container.offset().top+30;
+                        var left = e.pageX-Rect.container.offset().left;
+                        var top = e.pageY-Rect.container.offset().top;
                         o.css("left", left);
                         o.attr("startX",left);
                         o.data("mouseBeginX",left);
@@ -390,8 +645,8 @@
                         e.preventDefault();
                         var o = Rect.obj;
                         if(o&&Rect.status){
-                            var dx = e.pageX-Rect.container.offset().left+30 - o.data("mouseBeginX");
-                            var dy = e.pageY-Rect.container.offset().top+30 - o.data("mouseBeginY");
+                            var dx = e.pageX-Rect.container.offset().left - o.data("mouseBeginX");
+                            var dy = e.pageY-Rect.container.offset().top - o.data("mouseBeginY");
                             if(dx<0){
                                 o.css("left" , parseFloat(o.attr("startX"))+dx );
                             }else{
@@ -412,10 +667,16 @@
                         if(Rect.status) {
                             var all = _this.all;
                             _this.controlPress = true;
+                            var list = [];
                             for (var key in all) {
                                 if (Rect.checkInclude(all[key].drag)) {
-                                    _this.select(key);
+                                    list.push(key);
                                 }
+                            }
+                            var _result = _this.getSelectedComposerList(list);
+                            var _list = _result.list;
+                            for(var i=0;i<_list.length;i++){
+                                _this.select(_list[i]);
                             }
                             _this.controlPress = false;
 
@@ -482,7 +743,7 @@
                             current.chooseMe();
                         }
                     }
-                    console.log(e.keyCode);
+                    //console.log(e.keyCode);
                     if(e.keyCode=="17"){
                         _this.controlPress = true;
                     }
@@ -517,6 +778,18 @@
                         var composer = new _this.allComposer[type].func(newOptions);
                         var id = composer.id;
                         _this.all[id] = composer;
+
+                        newOptions.id = id;
+                        var o = {
+                            oldValue:{},
+                            newValue:{
+                                composerSettings:newOptions
+                            },
+                            composerId:id,
+                            type:"insertAbsoluteComposer"
+                        };
+                        CM.allComposer.util.func.addOpe(o);
+
                         _this.clone.remove();
                         delete _this.clone;
                         _this.clone = undefined;
@@ -526,8 +799,8 @@
                 });
             },
             initDragList: function(){
-                this.dragList.find(".groupList li").not("#body_setting").remove();
-                this.dragList.find(".groupCenter").not("#bodySettingBox").remove();
+                // this.dragList.find(".groupList li").not("#body_setting").remove();
+                // this.dragList.find(".groupCenter").not("#bodySettingBox").remove();
                 var groupList = this.dragList.find(".groupList");
 
                 for(var i=this.groupList.length-1;i>=0;i--){
@@ -621,6 +894,102 @@
 
                 return spinnerEditor;
             },
+            commonSettingData:function(commonKey,val){
+                var curr = this.current;
+                var selectedList = this.selectedList;
+                if(curr&&selectedList){
+                    if(val == curr.layout[commonKey]){
+                        return;
+                    }
+                    var o = {
+                        oldValue:[],
+                        newValue:[],
+                        composerList:[],
+                        type:"commonSettingChange"
+                    };
+                    var currentId = curr.id;
+                    this.controlPress = true;
+                    for(var key in selectedList){
+                        var composer = selectedList[key];
+                        var oldV = $.extend({},composer.layout);
+                        composer.layout[commonKey] = val;
+                        var newV = $.extend({},composer.layout);
+                        composer._syncUI();
+                        composer.afterResize(composer.composer);
+                        this.select(composer.id);
+                        o.oldValue.push(oldV);
+                        o.newValue.push(newV);
+                        o.composerList.push(composer.id);
+                    }
+                    this.allComposer.util.func.addOpe(o);
+                    this.select(currentId);
+                    this.controlPress = false;
+                }
+            },
+            initCommonSetting:function(){
+                var _this = this;
+                var propertyItem = this.getPropertyItem();
+
+                var leftBox = propertyItem.clone();
+                leftBox.find(".property_label_title").html("横向偏移：");
+                leftBox.find(".property_info").html($('<input type="text" id="commonLeft"/>'));
+
+
+                var topBox = propertyItem.clone();
+                topBox.find(".property_label_title").html("纵向偏移：");
+                topBox.find(".property_info").html($('<input type="text" id="commonTop"/>'));
+
+                var widthBox = propertyItem.clone();
+                widthBox.find(".property_label_title").html("控件宽度：");
+                widthBox.find(".property_info").html($('<input type="text" id="commonWidth"/>'));
+
+
+                var heightBox = propertyItem.clone();
+                heightBox.find(".property_label_title").html("控件高度：");
+                heightBox.find(".property_info").html($('<input type="text" id="commonHeight"/>'));
+
+                var indexBox = propertyItem.clone();
+                indexBox.find(".property_label_title").html("控件层级：");
+                indexBox.find(".property_info").html($('<input type="text" id="commonIndex"/>'));
+
+                $("#commonSettingList").append(leftBox).append(topBox).append(widthBox).append(heightBox).append(indexBox);
+
+                $( "#commonLeft" ).spinner({
+                    min:0,
+                    change:function(event,ui){
+                        var val = $(this).val();
+                        _this.commonSettingData("l",val);
+                    }
+                });
+                $( "#commonTop" ).spinner({
+                    min:0,
+                    change:function(event,ui){
+                        var val = $(this).val();
+                        _this.commonSettingData("t",val);
+                    }
+                });
+                $( "#commonWidth" ).spinner({
+                    min:0,
+                    change:function(event,ui){
+                        var val = $(this).val();
+                        _this.commonSettingData("w",val);
+                    }
+                });
+                $( "#commonHeight" ).spinner({
+                    min:0,
+                    change:function(event,ui){
+                        var val = $(this).val();
+                        _this.commonSettingData("h",val);
+                    }
+                });
+                $( "#commonIndex" ).spinner({
+                    min:0,
+                    change:function(event,ui){
+                        var val = $(this).val();
+                        _this.commonSettingData("index",val);
+                    }
+                });
+            },
             initAbsoluteBodySetting:function(){
                 var _this = this;
                 var propertyItem = this.getPropertyItem();
@@ -640,7 +1009,39 @@
                 var colorSelect = $('<div class="color_select">').html($('<input type="text" id="bodyBg" readonly="readonly"/>'));
                 bgBox.find(".property_info").html(colorSelect);
 
-                $("#bodySettingList").html("").append(widthBox).append(heightBox).append(bgBox);
+                var bgImgBox = propertyItem.clone();
+                bgImgBox.find(".property_label_title").html("背景图片：");
+                var imgListBox = $("<div class='body_img_list'>").css("border","none");
+                for(var i=0;i<this.bgImgList.length;i++){
+                    var imgItem = $("<div>").addClass("body_img_item");
+                    imgItem.data("data",this.bgImgList[i]);
+                    //var imgTitle = $("<div>").addClass("body_img_title").html(this.bgImgList[i].title);
+                    var imgObj = $("<div>").addClass("body_img_bg").css({
+                        "background-image":"url("+this.bgImgList[i].link+")",
+                        "background-repeat":"no-repeat no-repeat",
+                        "background-size":"100% 100%"
+                    });
+                    imgObj.appendTo(imgItem);
+                    //imgTitle.appendTo(imgItem);
+                    if(this.bodySetting.bgImage == this.bgImgList[i].link){
+                        imgItem.addClass("selected");
+                    }
+                    imgItem.appendTo(bgImgBox);
+                    imgListBox.append(imgItem);
+                }
+                bgImgBox.find(".property_info").html(imgListBox);
+                imgListBox.delegate(".body_img_item","click",function(){
+                    imgListBox.find(".body_img_item").removeClass("selected");
+                    $(this).addClass("selected");
+                    var data = $(this).data("data");
+                    _this.bodySetting.bgImage = data.link;
+                    _this.designer.css({
+                        "background-image":"url("+data.link+")",
+                        "background-repeat":"no-repeat no-repeat",
+                        "background-size":"100% 100%"
+                    });
+                });
+                $("#bodySettingList").html("").append(widthBox).append(heightBox).append(bgBox).append(bgImgBox);
 
                 $( "#bodyWidth" ).spinner({
                     min:1,
@@ -778,6 +1179,40 @@
                 var colorSelect = $('<div class="color_select">').html($('<input type="text" id="bodyBg" readonly="readonly"/>'));
                 bgBox.find(".property_info").html(colorSelect);
                 bodySettingList.append(bgBox);
+                var bgImgBox = propertyItem.clone();
+                bgImgBox.find(".property_label_title").html("背景图片：");
+                var imgListBox = $("<div class='body_img_list'>").css("border","none");
+                for(var i=0;i<this.bgImgList.length;i++){
+                    var imgItem = $("<div>").addClass("body_img_item");
+                    imgItem.data("data",this.bgImgList[i]);
+                    //var imgTitle = $("<div>").addClass("body_img_title").html(this.bgImgList[i].title);
+                    var imgObj = $("<div>").addClass("body_img_bg").css({
+                        "background-image":"url("+this.bgImgList[i].link+")",
+                        "background-repeat":"no-repeat no-repeat",
+                        "background-size":"100% 100%"
+                    });
+                    imgObj.appendTo(imgItem);
+                    //imgTitle.appendTo(imgItem);
+                    if(this.bodySetting.bgImage == this.bgImgList[i].link){
+                        imgItem.addClass("selected");
+                    }
+                    imgItem.appendTo(bgImgBox);
+                    imgListBox.append(imgItem);
+                }
+                bgImgBox.find(".property_info").html(imgListBox);
+                imgListBox.delegate(".body_img_item","click",function(){
+                    imgListBox.find(".body_img_item").removeClass("selected");
+                    $(this).addClass("selected");
+                    var data = $(this).data("data");
+                    _this.bodySetting.bgImage = data.link;
+                    _this.designer.css({
+                        "background-image":"url("+data.link+")",
+                        "background-repeat":"no-repeat no-repeat",
+                        "background-size":"100% 100%"
+                    });
+                });
+                $("#bodySettingList").append(bgImgBox);
+
 
             },
             initBodyBg : function(){
@@ -790,7 +1225,7 @@
                     showAlpha:true,
                     showButtons:false,
                     preferredFormat:'hex',
-                    move:function(color){
+                    change:function(color){
                         var r = parseInt(color._r);
                         var g = parseInt(color._g);
                         var b = parseInt(color._b);
@@ -862,6 +1297,7 @@
                 if(typeof(data) == "string"){
                     data = JSON.parse(data);
                 }
+                this.bindGroupList = data.bindGroupList||this.bindGroupList;
                 this.designerType = data.designerType||this.designerType;
                 this.bodySetting = data.bodySetting||this.bodySetting;
                 this.containerList = data.containerList||this.containerList;
@@ -869,8 +1305,14 @@
                 _box.css({
                     width:this.bodySetting.width,
                     height:this.bodySetting.height,
-                    background:this.bodySetting.bgColor
+                    "background-color":this.bodySetting.bgColor
                 });
+                if(this.bodySetting.bgImage){
+                    _box.css({"background-image":"url("+this.bodySetting.bgImage+")",
+                        "background-repeat":"no-repeat no-repeat",
+                        "background-size":"100% 100%"
+                    });
+                }
                 if(this.designerType == "relative"){
                     var configSetting = {};
                     for(var i=0;data&&data.composerList&&i<data.composerList.length;i++){
@@ -916,8 +1358,13 @@
                 var all = this.all;
                 var bodySetting = this.bodySetting;
                 var cssOption = {
-                    background:bodySetting.bgColor
+                    "background-color":bodySetting.bgColor
                 };
+                if(bodySetting.bgImage){
+                    cssOption["background-image"]="url("+bodySetting.bgImage+")";
+                    cssOption["background-repeat"]="no-repeat no-repeat";
+                    cssOption["background-size"]="100% 100%";
+                }
                 if(bodySetting.widthType=="%"){
                     cssOption.width = bodySetting.rWidth+bodySetting.widthType;
                 }else{
@@ -982,8 +1429,13 @@
 
                 var bodySetting = this.bodySetting;
                 var cssOption = {
-                    background:bodySetting.bgColor
+                    "background-color":bodySetting.bgColor
                 };
+                if(bodySetting.bgImage){
+                    cssOption["background-image"]="url("+bodySetting.bgImage+")";
+                    cssOption["background-repeat"]="no-repeat no-repeat";
+                    cssOption["background-size"]="100% 100%";
+                }
                 if(bodySetting.widthType=="%"){
                     cssOption.width = bodySetting.rWidth+bodySetting.widthType;
                 }else{
@@ -1049,6 +1501,7 @@
                     var setting = o.getSettings();
                     data.composerList.push(setting);
                 }
+                data.bindGroupList= this.bindGroupList;
                 data.bodySetting = this.bodySetting;
                 data.designerType = this.designerType;
                 data.containerList = this.containerList;

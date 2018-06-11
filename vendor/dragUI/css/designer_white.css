@@ -541,3 +541,40 @@ body{
     width:100%;
     margin:0;
 }
+.body_img_list{
+    position:relative;
+}
+.body_img_item{
+    width:36px;
+    display: inline-block;
+    border:2px dotted #e3e3e3;
+    cursor: pointer;
+    margin:0 3px;
+}
+.body_img_item.selected,.body_img_item:hover{
+    border:2px dotted #3b93ff;
+}
+.body_img_item .body_img_bg{
+    width:30px;
+    height:30px;
+    margin:1px;
+}
+.body_img_title{
+    line-height: 20px;
+    text-align: center;
+}
+.bind-group-tools{
+    position:absolute;
+    right:-30px;
+    top:0;
+
+}
+.bind-group-tools .fa{
+    width:30px;
+    height:30px;
+    background: #ebeef7;
+    color:#999;
+    cursor: pointer;
+    text-align: center;
+    line-height: 30px;
+}
