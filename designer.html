@@ -12,6 +12,7 @@
     <script type="text/javascript" src="vendor/main.js"></script>
     <script type="text/javascript">
         var CM = {};
+        //自定义控件配置
         var composerConfig = {
             'c_label':'dragUI/js/composer/c_label',
             'c_iframe':'dragUI/js/composer/c_iframe',
@@ -19,6 +20,7 @@
             'chart_bingzhuangtu':'dragUI/js/composer/chart_bingzhuangtu',
             'chart_zhexiantu':'dragUI/js/composer/chart_zhexiantu'
         };
+        //入口依赖
         require.config({
             paths:{
                 'composerMap':'dragUI/js/composer/composerMap'
@@ -41,6 +43,7 @@
             $(function(){
                console.log(123);
             });
+            //左侧拖拽列表配置
             var groupList = [{
                 groupName:"基本",groupList:[{
                     groupName:"简单组件",composerList:[
@@ -63,6 +66,7 @@
                     ]
                 }]
             }];
+            //背景列表
             var bgImgList = [{
                 title:"背景1",link:"vendor/dragUI/image/bg1.png"
             },{
@@ -80,6 +84,7 @@
             },{
                 title:"背景8",link:"vendor/dragUI/image/bg8.png"
             }];
+            //初始化面板
             composerMap.init({
                 designer:$("#designer"),
                 groupList:groupList,
@@ -92,6 +97,7 @@
                 //,designerType:"relative"
                 //,theme:"dark"//dark or white，
             });
+            //回显页面
             composerMap.show(
             //     {
             //     composerList:[]
@@ -126,6 +132,7 @@
     <div class="designer_btn" id="designer_redo"><i class="fa fa-reply"></i>撤销</div>
     <div class="designer_btn" id="designer_do"><i class="fa fa-share"></i>取消撤销</div>
     <div class="designer_btn" id="designer_group"><i class="fa fa-object-group"></i>组合</div>
+    <!-- 根据需要添加icon，icon列表可以从 https://fontawesome.com/icons?d=gallery&m=free 中寻找-->
     <!--<div class="designer_btn" id="designer_delete"><i class="fa fa-trash-alt"></i>删除</div>-->
 </div>
 <div id="designerBox">

@@ -4,6 +4,7 @@ require.config({
     }
 });
 define(['iframeConfig'], function(iframeConfig){
+    //dom对象resize事件的实现
     (function($, h, c) {
         var a = $([]), e = $.resize = $.extend($.resize, {}), i, k = "setTimeout", j = "resize", d = j
             + "-special-event", b = "delay", f = "throttleWindow";
@@ -69,6 +70,7 @@ define(['iframeConfig'], function(iframeConfig){
         }
     })(jQuery, this);
     var o = {
+        //公共编辑配置
         commonEditor:function (box,setting,composer){
             var editor = undefined;
             var _this = this;
@@ -226,6 +228,7 @@ define(['iframeConfig'], function(iframeConfig){
             }
             return true;
         },
+        //获取控件属性值
         getComposerValue:function(list,o){
             if(list.length>0){
                 var _o = o[list[0]];
@@ -235,6 +238,7 @@ define(['iframeConfig'], function(iframeConfig){
                 return o;
             }
         },
+        //给控件属性赋值
         setComposerValue:function(list,o,value,type){
             if(list.length>1){
                 var _o = o[list[0]];
@@ -247,12 +251,14 @@ define(['iframeConfig'], function(iframeConfig){
                 o[list[0]] = value;
             }
         },
+        //添加操作缓存，用于redo和todo
         addOpe:function(o){
             CM.opeList = CM.opeList||[];
             var _ind = CM.opeIndex;
             CM.opeList.splice(0,_ind,o);
             CM.opeIndex = 0;
         },
+        //公共的数据修改事件
         editorChangeData:function(setting,composer,value,opeType,oldValue){
             if(opeType == "1"){
                 var o = {
@@ -276,6 +282,7 @@ define(['iframeConfig'], function(iframeConfig){
             composer._syncUI();
             composer.chooseMe();
         },
+        //1为redo，0位todo，将来有新的类型在这添加
         doOpeSetting:function(setting,type){
             var _this = this;
             //console.log(setting);
@@ -384,6 +391,7 @@ define(['iframeConfig'], function(iframeConfig){
                 }
             }
         },
+        //公共初始化配置property
         initProperty:function(composer,propertyCode,propertySettingKey){
             var util = this;
             propertyCode = propertyCode||"";
@@ -484,6 +492,7 @@ define(['iframeConfig'], function(iframeConfig){
             }
             groupListBox.find("li").first().trigger("click");
         },
+        //更新property数据
         updateProperty:function(composer,propertyCode,propertySettingKey){
 
             propertyCode = propertyCode||"";
@@ -512,6 +521,7 @@ define(['iframeConfig'], function(iframeConfig){
             }
 
         },
+        //显示property面板
         showProperty:function(composer,propertyCode,propertySettingKey){
             $(".propertyList").hide();
             var boxid = propertyCode+"PropertyList"+composer.id;

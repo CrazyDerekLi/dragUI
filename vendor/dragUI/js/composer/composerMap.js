@@ -34,25 +34,25 @@
             }
         }
         var composerMap = {
-            allComposer:composerType,
-            opeList:[],
-            opeIndex:0,
-            controlPress:false,
-            selectedList:{},
-            bindGroupList:{},
-            groupList:[],
-            containerList:[],
-            bgImgList:[],
-            all:{},
-            lock:false,
-            current:null,
-            dragging:false,
-            clone:undefined,
-            cloneObj:null,
-            relativeMoveStart:false,
-            designerType:"absolute",
-            theme:"white",
-            themePath:basePath+"css/",
+            allComposer:composerType,           //所有注入的控件，包括util等工具类对象，调用方式this.allComposer[key].func
+            opeList:[],                         //todo和redo的数据
+            opeIndex:0,                         //todo和redo的执行游标
+            controlPress:false,                 //是否按住control进行多选
+            selectedList:{},                    //控件多选选中列表，如果非多选则只有一个对象，key为id，value为控件对象
+            bindGroupList:{},                   //组合控件的关系，key为组合id，value为控件id组成的数组
+            groupList:[],                       //左侧拖拽区域控件列表的配置
+            containerList:[],                   //容器列表
+            bgImgList:[],                       //背景图片列表
+            all:{},                             //所有创建的控件实例，key为id，value为控件内容
+            lock:false,                         //页面锁定状态，取消拖拽修改事件
+            current:null,                       //当前选中对象
+            dragging:false,                     //相对布局的拖拽状态
+            clone:undefined,                    //左侧拖拽工具复制出的对象
+            cloneObj:null,                      //相对布局拖拽复制出来的对象
+            relativeMoveStart:false,            //相对布局移动开始状态
+            designerType:"absolute",            //面板设计模式
+            theme:"white",                      //样式
+            themePath:basePath+"css/",          //样式路径
             bodySetting:{
                 width:1920,
                 height:1080,
@@ -70,12 +70,15 @@
                 className:"",
                 bgImage:""
             },
+            //保存接口
             save:function(){
                 alert("保存成功");
             },
+            //根据id获取对象
             get:function(id){
                 return this.all[id];
             },
+            //根据id选中对象
             select:function(id){
 
                 if (!this.controlPress){
@@ -129,6 +132,7 @@
                 }
 
             },
+            //切换样式
             changeTheme:function(theme){
 
                 this.theme = theme;
@@ -149,6 +153,7 @@
                     background:this.bodySetting.bgColor
                 });
             },
+            //面板初始化
             init:function(options){
                 var _this = this;
                 this.designerType = options.designerType||this.designerType;//absolute,relative
@@ -317,14 +322,17 @@
                 });
 
             },
+            //根据分组id关闭分组
             closeGroup:function(groupid){
                 if($("#"+groupid).get(0)){
                     $("#"+groupid).remove();
                 }
             },
+            //关闭所有分组
             closeAllGroup:function(){
                 $(".bind-group").remove();
             },
+            //初始化分组dom
             initGroup:function(groupid){
                 var _this = this;
                 this.closeGroup(groupid);
@@ -334,10 +342,7 @@
                 del.appendTo(groupTools);
                 groupTools.appendTo(group);
                 del.click(function(e){
-                    console.log(1234);
                     var _groupid = $(this).data("groupid");
-                    console.log(123);
-                    console.log(_groupid);
                     $("#"+_groupid).remove();
                     delete _this.bindGroupList[_groupid]
                 });
@@ -412,6 +417,7 @@
                 });
 
             },
+            //获取选中分组控件列表
             getSelectedComposerList:function(list1){
                 var list = [].concat(list1);
                 this.bindGroupList = this.bindGroupList||{};
@@ -457,6 +463,7 @@
                     list:list
                 };
             },
+            //绑定相对布局面板控件
             bindRelativeEvent:function(){
                 this.designer.css({
                     width:this.bodySetting.width+this.bodySetting.widthType,
@@ -583,6 +590,7 @@
 
                 });
             },
+            //绑定绝对布局控件
             bindAbsoluteEvent:function(){
                 this.designer.css({
                     width:this.bodySetting.width,
@@ -798,6 +806,7 @@
 
                 });
             },
+            //初始化左侧拖拽面板组件
             initDragList: function(){
                 // this.dragList.find(".groupList li").not("#body_setting").remove();
                 // this.dragList.find(".groupCenter").not("#bodySettingBox").remove();
@@ -843,6 +852,7 @@
                 }
 
             },
+            //更新spinnerbox
             updateSpinnerBox:function(id,wKey,rwKey,typeKey){
                 var widthSpinner = $("#"+id);
                 var pxbox = widthSpinner.find(".label_px");
@@ -859,6 +869,7 @@
                 }
                 widthSpinner.find("input").spinner("value",_w);
             },
+            //更新bodysetting
             updateBodySetting:function(){
                 if(this.designerType == "relative"){
                     this.updateSpinnerBox("bodyWidth","width","rWidth","widthType");
@@ -871,6 +882,7 @@
                     $("#bodyHeight").spinner("value",this.bodySetting.height);
                 }
             },
+            //获取属性公共item对象
             getPropertyItem:function(){
                 var propertyItem = $("<div class='property_item'>");
                 var propertyLabel = $("<div class='property_label'>");
@@ -880,6 +892,7 @@
                 propertyItem.append(propertyLabel).append(propertyInfo);
                 return propertyItem;
             },
+            //获取spinnerEditor
             getSpinnerEditor:function(){
                 var spinnerEditor = $('<div class="spinner_editor_box">');
                 var spinnerBox = $('<div class="spinner_box">');
@@ -894,6 +907,7 @@
 
                 return spinnerEditor;
             },
+            //修改公共Data
             commonSettingData:function(commonKey,val){
                 var curr = this.current;
                 var selectedList = this.selectedList;
@@ -926,6 +940,7 @@
                     this.controlPress = false;
                 }
             },
+            //初始化公共属性配置
             initCommonSetting:function(){
                 var _this = this;
                 var propertyItem = this.getPropertyItem();
@@ -990,6 +1005,7 @@
                     }
                 });
             },
+            //初始化绝对布局bodySetting
             initAbsoluteBodySetting:function(){
                 var _this = this;
                 var propertyItem = this.getPropertyItem();
@@ -1064,6 +1080,7 @@
                     }
                 });
             },
+            //初始化Spinnerbox
             initSpinnerBox:function(settingBox,propertyItem,spinnerEditor,id,label,wKey,rwKey,typeKey,changeSyncUI){
                 var _this = this;
                 var widthBox = propertyItem.clone(true);
@@ -1119,6 +1136,7 @@
                 }
                 widthSpinnerInput.spinner(opWidth);
             },
+            //初始化相对布局bodysetting
             initRelativeBodySetting:function(){
                 var _this = this;
                 var propertyItem = this.getPropertyItem();
@@ -1215,6 +1233,7 @@
 
 
             },
+            //初始化body背景
             initBodyBg : function(){
                 var _this = this;
                 var bg = $("#bodyBg");
@@ -1237,6 +1256,7 @@
                     }
                 });
             },
+            //绑定左侧拖拽事件
             bindDragList:function(){
                 var box = $("#dragList");
                 var selector = '.dragItem';
@@ -1290,6 +1310,7 @@
                     _this.updateBodySetting();
                 });
             },
+            //设计器回显
             show:function(showJson,box){
                 var _box = box||this.designer;
                 var data = showJson||window.localStorage.getItem("designerData");
@@ -1353,6 +1374,7 @@
                 }
                 return data;
             },
+            //设计器预览
             designerView:function(box){
                 box.html("");
                 var all = this.all;
@@ -1417,6 +1439,7 @@
                 }
 
             },
+            //生产模式页面展示
             view:function(showJson,box){
                 var _box = box||this.designer;
                 var data = showJson||window.localStorage.getItem("designerData");
@@ -1492,6 +1515,7 @@
 
                 return data;
             },
+            //保存逻辑
             _save:function(){
                 var data = {
                     composerList:[]

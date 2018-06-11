@@ -3,17 +3,17 @@ require.config({
 define(["util"], function(util){
 
     var base = {
-        designer:true,
-        designerType:"absolute",
-        box:'',
-        drag:undefined,
-        composer:undefined,
-        classname:"",
-        classTitle:"",
-        classIcon:"",
-        id:"",
-        all:{},
-        propertyBox:undefined,
+        designer:true,                      //设计模式（true）和生产模式（false）
+        designerType:"absolute",            //控件设计类型
+        box:'',                             //外层容器
+        drag:undefined,                     //控件拖拽dom对象
+        composer:undefined,                 //内嵌控件实现dom对象
+        classname:"",                       //控件类型
+        classTitle:"",                      //控件名称
+        classIcon:"",                       //控件图标
+        id:"",                              //控件id
+        propertyBox:undefined,              //属性容器
+        //布局属性
         layout:{						    //		公共布局属性
             l:0,							//		left
             t:0,							//		top
@@ -23,12 +23,14 @@ define(["util"], function(util){
             columnid:'',
             layoutid:''						//		容器id
         },
+        //私有属性列表
         property:{							//		属性参数
             style:{},						//		样式属性
             private:{},						//		私有属性
             event:{},						//		事件属性
             data:{}							//		数据属性
         },
+        //深层复制对象实现
         _copyObj:function(o1,o2){
             if(typeof o1 === "object" && o1 instanceof Array){
                 o2 = o2||[];
@@ -79,11 +81,13 @@ define(["util"], function(util){
             }
 
         },
+        //默认初始化复制逻辑
         _initAttrs:function(options){
             this.box = options.box;
             this.designer = options.designer;
             this._copyObj(options,this);
         },
+        //控件初始化入口
         init:function(options){
             this._initAttrs(options);
             if(!this.id){
@@ -92,6 +96,7 @@ define(["util"], function(util){
             this._createDrag();
             return this;
         },
+        //将来控件复制粘贴的实现，获取options配置~~进行控件的复制，目前没做
         _clone:function(options){
             options.id = '';
             var o = {};
@@ -99,6 +104,7 @@ define(["util"], function(util){
             o.init(options);
             return o;
         },
+        //创建拖拽对象，这个是设计模式和生产模式的入口
         _createDrag:function(){
             this._destroyDrag();
             this.drag = $("<div>");
@@ -134,15 +140,18 @@ define(["util"], function(util){
                 this._bindDesignerEvent();
             }
         },
+        //销毁控件拖拽dom对象
         _destroyDrag:function(){
             if(this.drag){
                 this.drag.remove();
             }
         },
+        //创建控件逻辑，先销毁后创建，createComposer在每个控件加自定义实现
         _createComposer:function(){
             this.destroyComposer();
             return this.createComposer();
         },
+        //获取控件上侧工具栏，并初始化工具栏事件，getTools为自定义工具栏实现，摆放位置为拖拽按钮和其他按钮之间
         _getTools:function(){
             var tools = this.getTools()||[];
             var moveBtn = $("<i class='fa fa-arrows-alt drag_move_btn' title='移动'>");
@@ -231,9 +240,11 @@ define(["util"], function(util){
             tools.push(del);
             return tools;
         },
+        //控件工具栏接口
         getTools:function(){
             return [];
         },
+        //绑定设计模式事件
         _bindDesignerEvent:function(){
             var _this = this;
             //		绑定设计器拖拽/resize事件
@@ -340,27 +351,26 @@ define(["util"], function(util){
             this.drag.attr("id",this.id);
             this.afterResize(this.composer);
         },
+        //启用resize
         bindResize:function(){
             this.drag.resizable( "enable" );
         },
+        //关闭resize
         unBindResize:function(){
             this.drag.resizable( "disable" );
         },
-        _getOptions:function(){
-            return this;
-        },
-        _setOptions:function(options){
-            this.init(options)
-        },
+        //同步属性渲染
         _syncUI:function(){
             this._createDrag();
         },
+        //销毁控件接口
         destroyComposer:function(){
             if(this.composer){
                 this.composer.remove();
             }
 
         },
+        //同步拖拽属性和Group
         syncDragUI:function(){
             var l = this.layout.l;
             var t = this.layout.t;
@@ -372,6 +382,7 @@ define(["util"], function(util){
             });
             this.syncGroup();
         },
+        //同步控件group
         syncGroup:function(){
             var bindGroup = CM.bindGroupList;
             for(var key in bindGroup){
@@ -383,9 +394,11 @@ define(["util"], function(util){
                 }
             }
         },
+        //创建控件内容接口
         createComposer:function(){},
         afterCreateComposer:function(){},	//		创建控件追加到页面后的回调
         bindEvent:function(){},				//		给控件绑定事件
+        //获取控件setting，用于控件的保存和复制，复制时去掉id并且需要添加box等其他属性
         getSettings:function(){
             var o = {
                 id:this.id,
@@ -396,21 +409,15 @@ define(["util"], function(util){
             };
             return o;
         },
-        initSelfProperty:function(){
-
-        },
-        saveProperty:function(){},			//		保存控件属性
-        setData:function(data){},			//		设置控件数据
-        getData:function(){},				//		提取控件数据
-        setValue:function(value){},			//		控件赋值
-        getValue:function(){},				//		控件取值
-        		//		渲染
+        //拖拽结束回调事件
         afterDrag:function(){
 
-        },				//		拖拽结束事件
+        },
+        //控件resize结束后回调事件
         afterResize:function(){
 
-        },			//		调整列宽结束事件
+        },
+        //控件销毁，且关闭控件的属性框
         destroy:function(){
             this.destroyComposer();
             this.drag.remove();
@@ -422,6 +429,7 @@ define(["util"], function(util){
                 propertyBox.hide();
             }
         },
+        //控件的自选择
         chooseMe:function(){
             var id = this.id;
             CM.select(id);

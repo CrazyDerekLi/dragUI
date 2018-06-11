@@ -35,6 +35,7 @@ define(["util"], function(util){
                 columnFit:"0",
                 columnsSetting:"12"
             },
+            //占满所有列
             fitAllColumns:function(){
 
                 if(this.property.columnFit == "1"){
@@ -70,6 +71,7 @@ define(["util"], function(util){
                     }
                 }
             },
+            //深度复制对象
             _copyObj:function(o1,o2){
                 if(typeof o1 === "object" && o1 instanceof Array){
                     o2 = o2||[];
@@ -120,11 +122,13 @@ define(["util"], function(util){
                 }
 
             },
+            //初始化属性
             _initAttrs:function(options){
                 this.box = options.box;
                 this.designer = options.designer;
                 this._copyObj(options,this);
             },
+            //初始化入口
             init:function(options){
                 this._initAttrs(options);
                 if(!this.id){
@@ -136,6 +140,7 @@ define(["util"], function(util){
                 CM.containerList.push(id);
                 return this;
             },
+            //创建Container
             _createContainer:function(){
 
                 if(!this.container||!this.container.get()){
@@ -176,6 +181,7 @@ define(["util"], function(util){
                     this._bindContainerEvent();
                 }
             },
+            //配置控件
             setComposer:function(){
                 for(var key in this.property.columnComposers){
                     var arr = this.property.columnComposers[key]||[];
@@ -195,6 +201,7 @@ define(["util"], function(util){
                     }
                 }
             },
+            //初始化所有列
             initAllColumns:function(){
 
                 var arr = [];
@@ -225,6 +232,7 @@ define(["util"], function(util){
                 this.property.columnComposers[this.id+"_"+(this.columns.length-1)] = lastColumns.concat(newArr);
 
             },
+            //获取按钮组
             _getTools:function(){
                 var tools = this.getTools()||[];
                 var setting = $("<i class='fa fa-cog' title='配置'>");
@@ -286,6 +294,7 @@ define(["util"], function(util){
             getTools:function(){
                 return [];
             },
+            //绑定容器事件
             _bindContainerEvent:function(){
                 var _this = this;
                 var head = $('<div class="designer_container_head">');
@@ -314,6 +323,7 @@ define(["util"], function(util){
                     this.bindResize();
                 }
             },
+            //绑定resize
             bindResize:function(){
                 var _this = this;
                 var resizeOption = {
@@ -327,6 +337,7 @@ define(["util"], function(util){
                 };
                 this.container.resizable(resizeOption);
             },
+            //同步容器UI
             syncContainerUI:function(){
 
 
@@ -336,6 +347,7 @@ define(["util"], function(util){
                 this.setComposer();
                 this.fitAllColumns();
             },
+            //获取容器配置，用于容器的保存
             getSettings:function(){
                 var o = {
                     id:this.id,
@@ -344,12 +356,14 @@ define(["util"], function(util){
                 };
                 return o;
             },
+            //同步UI
             _syncUI:function(){
                 this.syncContainerUI();
             },
             chooseMe:function(){
 
             },
+            //销毁容器
             destroy:function(){
                 var columns = this.property.columnComposers;
                 for(var key in columns){
